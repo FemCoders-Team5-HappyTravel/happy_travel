@@ -1,0 +1,9 @@
+package com.femcoders.happy_travel.repositories;
+
+import com.femcoders.happy_travel.models.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UserRepository extends JpaRepository<User, Long> {
+
+}
+ 
