@@ -35,18 +35,24 @@ public class User {
     @NotBlank(message = "Password is required")
     @Column(nullable = false)
     private String password;
-
+/*
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
     private Set<String> roles = new HashSet<>();
 
     private boolean enabled = true;
-
     private boolean accountNonLocked = true;
-
     private boolean credentialsNonExpired = true;
-
     private boolean accountNonExpired = true;
+*/
+@Enumerated(EnumType.STRING)
+private Role role = Role.USER;
+
+@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+private Set<Destination> destinations;
+
+@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+private Set<Review> reviews;
 
 }

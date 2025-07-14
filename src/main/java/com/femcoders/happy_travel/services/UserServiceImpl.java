@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
     public UserResponse createUser(UserRequest request) {
         User user = UserMapper.toEntity(request);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.getRoles().add("USER");
+       // user.getRoles().add("USER");
         User savedUser = userRepository.save(user);
         return UserMapper.toResponse(savedUser);
     }

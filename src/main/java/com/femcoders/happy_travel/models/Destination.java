@@ -3,7 +3,9 @@ package com.femcoders.happy_travel.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import java.util.Set;
 
+@Entity
 @Table(name="destinations")
 @Getter
 @Setter
@@ -27,4 +29,6 @@ public class Destination {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+    @OneToMany(mappedBy = "destination", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Review> reviews;
 }
