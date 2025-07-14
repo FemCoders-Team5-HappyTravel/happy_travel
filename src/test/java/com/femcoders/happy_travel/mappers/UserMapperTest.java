@@ -1,6 +1,8 @@
 package com.femcoders.happy_travel.mappers;
 
-import com.femcoders.happy_travel.dtos.UserDto;
+import com.femcoders.happy_travel.dtos.UserMapper;
+import com.femcoders.happy_travel.dtos.UserRequest;
+import com.femcoders.happy_travel.dtos.UserResponse;
 import com.femcoders.happy_travel.models.User;
 import org.junit.jupiter.api.Test;
 
@@ -11,56 +13,32 @@ import static org.assertj.core.api.Assertions.assertThat;
 class UserMapperTest {
 
     @Test
-    void shouldMapUserToDto() {
-        User user = User.builder()
-                .id(1L)
-                .username("pico")
-                .email("picopico@example.com")
-                .roles(Set.of("USER"))
-                .enabled(true)
-                .build();
+    void toEntity_shouldMapRequestToEntity() {
+        UserRequest request = new UserRequest();
+        request.setUsername("alex");
+        request.setEmail("alex@example.com");
+        request.setPassword("pwd");
 
-        UserDto dto = UserMapper.toDto(user);
+        User entity = UserMapper.toEntity(request);
 
-        assertThat(dto).isNotNull();
-        assertThat(dto.getId()).isEqualTo(1L);
-        assertThat(dto.getUsername()).isEqualTo("pico");
-        assertThat(dto.getEmail()).isEqualTo("picopico@example.com");
-        assertThat(dto.getRoles()).containsExactly("USER");
-        assertThat(dto.isEnabled()).isTrue();
+        assertThat(entity.getUsername()).isEqualTo("alex");
+        assertThat(entity.getEmail()).isEqualTo("alex@example.com");
+        assertThat(entity.getPassword()).isEqualTo("pwd");
     }
 
     @Test
-    void shouldMapDtoToUser() {
-        UserDto dto = UserDto.builder()
-                .id(2L)
-                .username("momo")
-                .email("momo@example.com")
-                .roles(Set.of("ADMIN"))
-                .enabled(false)
-                .build();
+    void toResponse_shouldMapEntityToResponse() {
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("alex");
+        user.setEmail("alex@example.com");
+        user.getRoles().add("USER");
 
-        User user = UserMapper.toEntity(dto);
+        UserResponse response = UserMapper.toResponse(user);
 
-        assertThat(user).isNotNull();
-        assertThat(user.getId()).isEqualTo(2L);
-        assertThat(user.getUsername()).isEqualTo("momo");
-        assertThat(user.getEmail()).isEqualTo("momo@example.com");
-        assertThat(user.getRoles()).containsExactly("ADMIN");
-        assertThat(user.isEnabled()).isFalse();
-    }
-
-    @Test
-    void shouldReturnNullWhenUserIsNull() {
-        assertThat(UserMapper.toDto(null)).isNull();
-    }
-
-    @Test
-    void shouldReturnNullWhenDtoIsNull() {
-        assertThat(UserMapper.toEntity(null)).isNull();
+        assertThat(response.getId()).isEqualTo(1L);
+        assertThat(response.getUsername()).isEqualTo("alex");
+        assertThat(response.getEmail()).isEqualTo("alex@example.com");
+        assertThat(response.getRoles()).contains("USER");
     }
 }
-
-
-
-
