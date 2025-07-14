@@ -1,5 +1,4 @@
 package com.femcoders.happy_travel.mappers;
-
 import com.femcoders.happy_travel.dtos.UserMapper;
 import com.femcoders.happy_travel.dtos.UserRequest;
 import com.femcoders.happy_travel.dtos.UserResponse;
@@ -10,9 +9,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class UserMapperTest {
-
-    @Test
+class UserMapperTest
     void toEntity_shouldMapRequestToEntity() {
         UserRequest request = new UserRequest();
         request.setUsername("alex");
@@ -41,4 +38,3 @@ class UserMapperTest {
         assertThat(response.getEmail()).isEqualTo("alex@example.com");
         assertThat(response.getRoles()).contains("USER");
     }
-}

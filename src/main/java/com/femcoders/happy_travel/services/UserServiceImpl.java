@@ -18,8 +18,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;  // <-- aquí la oficial de Spring
-
+    private final PasswordEncoder passwordEncoder;
     @Override
     public UserResponse createUser(UserRequest request) {
         User user = UserMapper.toEntity(request);
