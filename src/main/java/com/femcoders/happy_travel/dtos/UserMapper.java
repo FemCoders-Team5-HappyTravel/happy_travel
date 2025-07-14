@@ -3,8 +3,6 @@ package com.femcoders.happy_travel.dtos;
 import com.femcoders.happy_travel.dtos.UserRequest;
 import com.femcoders.happy_travel.dtos.UserResponse;
 import com.femcoders.happy_travel.models.User;
-import com.femcoders.happy_travel.models.User;
-
 public class UserMapper {
 
     public static User toEntity(UserRequest request) {

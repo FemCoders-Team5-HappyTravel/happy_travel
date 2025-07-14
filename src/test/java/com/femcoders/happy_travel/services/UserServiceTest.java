@@ -1,105 +1,133 @@
 package com.femcoders.happy_travel.services;
 
+import com.femcoders.happy_travel.dtos.UserRequest;
 import com.femcoders.happy_travel.models.User;
 import com.femcoders.happy_travel.repositories.UserRepository;
+import com.femcoders.happy_travel.services.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import java.util.Arrays;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.util.List;
 import java.util.Optional;
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @InjectMocks
-    private UserService userService;
+    private UserServiceImpl userService;
 
     @Test
-    void shouldReturnAllUsers() {
-        User user1 = User.builder().id(1L).username("alexa").email("alexa@example.com").password("pass").build();
-        User user2 = User.builder().id(2L).username("momo").email("momo@example.com").password("pass").build();
-        List<User> mockUsers = Arrays.asList(user1, user2);
+    void createUser_shouldReturnUserResponse() {
+        UserRequest request = new UserRequest();
+        request.setUsername("testuser");
+        request.setEmail("test@example.com");
+        request.setPassword("plainpassword");
 
-        when(userRepository.findAll()).thenReturn(mockUsers);
-        List<User> result = userService.getAllUsers();
+        User savedUser = new User();
+        savedUser.setId(1L);
+        savedUser.setUsername("testuser");
+        savedUser.setEmail("test@example.com");
+        savedUser.setPassword("encodedpassword");
+        savedUser.getRoles().add("USER");
 
-        assertThat(result).hasSize(2);
-        assertThat(result).extracting(User::getUsername).containsExactly("alexa", "momo");
-        verify(userRepository, times(1)).findAll();
+        when(passwordEncoder.encode("plainpassword")).thenReturn("encodedpassword");
+        when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
+        var response = userService.createUser(request);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getId()).isEqualTo(1L);
+        assertThat(response.getUsername()).isEqualTo("testuser");
+        assertThat(response.getEmail()).isEqualTo("test@example.com");
+        assertThat(response.getRoles()).contains("USER");
     }
 
     @Test
-    void shouldReturnUserById() {
-        User user = User.builder().id(1L).username("alexa").email("alexa@example.com").password("pass").build();
+    void getAllUsers_shouldReturnListOfUserResponses() {
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("testuser");
+        user.setEmail("test@example.com");
+        user.getRoles().add("USER");
+
+        when(userRepository.findAll()).thenReturn(List.of(user));
+
+        var responses = userService.getAllUsers();
+
+        assertThat(responses).hasSize(1);
+        assertThat(responses.get(0).getUsername()).isEqualTo("testuser");
+    }
+
+    @Test
+    void getUserById_shouldReturnUserResponse() {
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("testuser");
+        user.setEmail("test@example.com");
+        user.getRoles().add("USER");
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        Optional<User> result = userService.getUserById(1L);
 
-        assertThat(result).isPresent();
-        assertThat(result.get().getUsername()).isEqualTo("alexa");
-        verify(userRepository, times(1)).findById(1L);
+        var response = userService.getUserById(1L);
 
+        assertThat(response).isNotNull();
+        assertThat(response.getId()).isEqualTo(1L);
     }
 
     @Test
-    void shouldSaveUser() {
-        User user = User.builder().username("alexa").email("alexa@example.com").password("pass").build();
-        when(userRepository.save(user)).thenReturn(user);
+    void getUserById_shouldThrowWhenNotFound() {
+        when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
-        User savedUser = userService.saveUser(user);
-
-        assertThat(savedUser.getUsername()).isEqualTo("alexa");
-        verify(userRepository, times(1)).save(user);
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> userService.getUserById(99L));
+        assertThat(exception.getMessage()).contains("User not found with id");
     }
 
     @Test
-    void shouldDeleteUser() {
-        Long userId = 1L;
-        User user = User.builder().id(userId).username("alexa").email("alexa@example.com").password("pass").build();
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+    void updateUser_shouldUpdateFields() {
+        UserRequest request = new UserRequest();
+        request.setUsername("updateduser");
+        request.setEmail("updated@example.com");
+        request.setPassword("newpassword");
 
-        doNothing().when(userRepository).deleteById(userId);
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("olduser");
+        user.setEmail("old@example.com");
+        user.setPassword("oldpassword");
+        user.getRoles().add("USER");
 
-        userService.deleteUser(userId);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode("newpassword")).thenReturn("encodednewpassword");
 
-        verify(userRepository, times(1)).findById(userId);
-        verify(userRepository, times(1)).deleteById(userId);
+        var response = userService.updateUser(1L, request);
+
+        assertThat(response.getUsername()).isEqualTo("updateduser");
+        assertThat(response.getEmail()).isEqualTo("updated@example.com");
     }
 
     @Test
-    void shouldReturnUserByUsername() {
-        User user = User.builder().username("alexa").email("alexa@example.com").password("pass").build();
+    void deleteUser_shouldCallRepositoryDelete() {
+        User user = new User();
+        user.setId(1L);
 
-        when(userRepository.findByUsername("alexa")).thenReturn(Optional.of(user));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        Optional<User> result = userService.getUserByUsername("alexa");
+        userService.deleteUser(1L);
 
-        assertThat(result).isPresent();
-        assertThat(result.get().getEmail()).isEqualTo("alexa@example.com");
-        verify(userRepository, times(1)).findByUsername("alexa");
-    }
-
-    @Test
-    void shouldReturnUserByEmail() {
-        User user = User.builder().username("momo").email("momo@example.com").password("pass").build();
-        when(userRepository.findByEmail("momo@example.com")).thenReturn(Optional.of(user));
-
-        Optional<User> result = userService.getUserByEmail("momo@example.com");
-
-        assertThat(result).isPresent();
-        assertThat(result.get().getUsername()).isEqualTo("momo");
-        verify(userRepository, times(1)).findByEmail("momo@example.com");
-
+        verify(userRepository, times(1)).delete(user);
     }
 }
-
-
