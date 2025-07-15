@@ -1,0 +1,17 @@
+package com.femcoders.happy_travel.services;
+import com.femcoders.happy_travel.dtos.destination.DestinationRequest;
+import com.femcoders.happy_travel.dtos.destination.DestinationResponse;
+import java.util.List;
+
+public interface DestinationService {
+    DestinationResponse createDestination(DestinationRequest request);
+    List<DestinationResponse> getAllDestinations();
+}
+
+
+
+
+
+
+
+

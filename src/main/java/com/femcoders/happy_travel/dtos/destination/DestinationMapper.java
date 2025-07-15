@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 public class DestinationMapper {
     public static Destination toEntity(DestinationRequest destinationRequest, String imageUrl) {
         return Destination.builder()
-                .country(destinationRequest.country())
-                .city(destinationRequest.city())
-                .description(destinationRequest.description())
+                .country(destinationRequest.getCountry())
+                .city(destinationRequest.getCity())
+                .description(destinationRequest.getDescription())
                 .imageUrl(imageUrl)
                 .build();
     }
