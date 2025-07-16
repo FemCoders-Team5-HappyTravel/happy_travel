@@ -30,13 +30,13 @@ class UserServiceTest {
         UserRequest request = new UserRequest();
         request.setUsername("testuser");
         request.setEmail("test@example.com");
-        request.setPassword("plainpassword");
+        request.setPassword("plain password");
 
         User savedUser = new User();
         savedUser.setId(1L);
         savedUser.setUsername("testuser");
         savedUser.setEmail("test@example.com");
-        savedUser.setPassword("plainpassword");
+        savedUser.setPassword("plain password");
 
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
 

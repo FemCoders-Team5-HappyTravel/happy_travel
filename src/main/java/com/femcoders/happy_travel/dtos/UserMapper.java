@@ -9,7 +9,7 @@ public class UserMapper {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword()); // Se cifrará en el service
+        user.setPassword(request.getPassword());
         return user;
     }
 
@@ -18,7 +18,6 @@ public class UserMapper {
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
-               // .roles(user.getRoles())
                 .build();
     }
 }
