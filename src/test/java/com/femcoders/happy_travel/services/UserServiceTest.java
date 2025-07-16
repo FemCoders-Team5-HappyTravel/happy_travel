@@ -1,6 +1,6 @@
 package com.femcoders.happy_travel.services;
 
-import com.femcoders.happy_travel.dtos.UserRequest;
+import com.femcoders.happy_travel.dtos.user.UserRequest;
 import com.femcoders.happy_travel.models.User;
 import com.femcoders.happy_travel.repositories.UserRepository;
 import org.junit.jupiter.api.Test;

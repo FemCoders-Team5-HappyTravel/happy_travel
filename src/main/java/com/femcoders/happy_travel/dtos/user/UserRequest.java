@@ -1,4 +1,4 @@
-package com.femcoders.happy_travel.dtos;
+package com.femcoders.happy_travel.dtos.user;
 
 import lombok.Data;
 

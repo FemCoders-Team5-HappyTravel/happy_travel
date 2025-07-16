@@ -1,11 +1,9 @@
 package com.femcoders.happy_travel.mappers;
-import com.femcoders.happy_travel.dtos.UserMapper;
-import com.femcoders.happy_travel.dtos.UserRequest;
-import com.femcoders.happy_travel.dtos.UserResponse;
+import com.femcoders.happy_travel.dtos.user.UserMapper;
+import com.femcoders.happy_travel.dtos.user.UserRequest;
+import com.femcoders.happy_travel.dtos.user.UserResponse;
 import com.femcoders.happy_travel.models.User;
 import org.junit.jupiter.api.Test;
-
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

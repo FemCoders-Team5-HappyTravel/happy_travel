@@ -1,7 +1,5 @@
-package com.femcoders.happy_travel.dtos;
+package com.femcoders.happy_travel.dtos.user;
 
-import com.femcoders.happy_travel.dtos.UserRequest;
-import com.femcoders.happy_travel.dtos.UserResponse;
 import com.femcoders.happy_travel.models.User;
 public class UserMapper {
 

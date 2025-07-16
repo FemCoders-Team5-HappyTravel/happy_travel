@@ -1,7 +1,7 @@
 package com.femcoders.happy_travel.services;
 
-import com.femcoders.happy_travel.dtos.UserRequest;
-import com.femcoders.happy_travel.dtos.UserResponse;
+import com.femcoders.happy_travel.dtos.user.UserRequest;
+import com.femcoders.happy_travel.dtos.user.UserResponse;
 
 import java.util.List;
 
