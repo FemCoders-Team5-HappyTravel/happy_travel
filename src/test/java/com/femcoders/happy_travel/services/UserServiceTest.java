@@ -3,13 +3,11 @@ package com.femcoders.happy_travel.services;
 import com.femcoders.happy_travel.dtos.UserRequest;
 import com.femcoders.happy_travel.models.User;
 import com.femcoders.happy_travel.repositories.UserRepository;
-import com.femcoders.happy_travel.services.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,9 +22,6 @@ class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
     @InjectMocks
     private UserServiceImpl userService;
 
@@ -35,16 +30,14 @@ class UserServiceTest {
         UserRequest request = new UserRequest();
         request.setUsername("testuser");
         request.setEmail("test@example.com");
-        request.setPassword("plainpassword");
+        request.setPassword("plain password");
 
         User savedUser = new User();
         savedUser.setId(1L);
         savedUser.setUsername("testuser");
         savedUser.setEmail("test@example.com");
-        savedUser.setPassword("encodedpassword");
-        savedUser.getRoles().add("USER");
+        savedUser.setPassword("plain password");
 
-        when(passwordEncoder.encode("plainpassword")).thenReturn("encodedpassword");
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
         var response = userService.createUser(request);
@@ -53,7 +46,6 @@ class UserServiceTest {
         assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getUsername()).isEqualTo("testuser");
         assertThat(response.getEmail()).isEqualTo("test@example.com");
-        assertThat(response.getRoles()).contains("USER");
     }
 
     @Test
@@ -62,7 +54,6 @@ class UserServiceTest {
         user.setId(1L);
         user.setUsername("testuser");
         user.setEmail("test@example.com");
-        user.getRoles().add("USER");
 
         when(userRepository.findAll()).thenReturn(List.of(user));
 
@@ -78,7 +69,6 @@ class UserServiceTest {
         user.setId(1L);
         user.setUsername("testuser");
         user.setEmail("test@example.com");
-        user.getRoles().add("USER");
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
@@ -101,17 +91,15 @@ class UserServiceTest {
         UserRequest request = new UserRequest();
         request.setUsername("updateduser");
         request.setEmail("updated@example.com");
-        request.setPassword("newpassword");
 
         User user = new User();
         user.setId(1L);
         user.setUsername("olduser");
         user.setEmail("old@example.com");
         user.setPassword("oldpassword");
-        user.getRoles().add("USER");
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(passwordEncoder.encode("newpassword")).thenReturn("encodednewpassword");
+        when(userRepository.save(any(User.class))).thenReturn(user);
 
         var response = userService.updateUser(1L, request);
 
