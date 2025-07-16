@@ -4,11 +4,12 @@ import com.femcoders.happy_travel.dtos.destination.DestinationResponse;
 import java.util.List;
 
 public interface DestinationService {
-    DestinationResponse createDestination(DestinationRequest request);
+    DestinationResponse createDestination(Long userId, DestinationRequest destinationRequest);
     List<DestinationResponse> getAllDestinations();
+    DestinationResponse getDestinationById(Long id);
+    DestinationResponse updateDestination(Long id, DestinationRequest request);
+    void deleteDestination(Long id);
 }
-
-
 
 
 
