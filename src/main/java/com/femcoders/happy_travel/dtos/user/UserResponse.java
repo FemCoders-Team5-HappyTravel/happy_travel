@@ -1,10 +1,8 @@
-package com.femcoders.happy_travel.dtos;
+package com.femcoders.happy_travel.dtos.user;
 
 import com.femcoders.happy_travel.models.Role;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.Set;
 
 @Data
 @Builder
