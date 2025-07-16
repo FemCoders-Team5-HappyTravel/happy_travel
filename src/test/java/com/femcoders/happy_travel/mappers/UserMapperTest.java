@@ -9,7 +9,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class UserMapperTest
+class UserMapperTest {
     void toEntity_shouldMapRequestToEntity() {
         UserRequest request = new UserRequest();
         request.setUsername("alex");
@@ -38,3 +38,4 @@ class UserMapperTest
         assertThat(response.getEmail()).isEqualTo("alex@example.com");
         assertThat(response.getRoles()).contains("USER");
     }
+}
