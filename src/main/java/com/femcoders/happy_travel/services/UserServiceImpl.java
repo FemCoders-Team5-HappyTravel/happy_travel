@@ -1,8 +1,8 @@
 package com.femcoders.happy_travel.services;
 
-import com.femcoders.happy_travel.dtos.UserRequest;
-import com.femcoders.happy_travel.dtos.UserResponse;
-import com.femcoders.happy_travel.dtos.UserMapper;
+import com.femcoders.happy_travel.dtos.user.UserRequest;
+import com.femcoders.happy_travel.dtos.user.UserResponse;
+import com.femcoders.happy_travel.dtos.user.UserMapper;
 import com.femcoders.happy_travel.models.User;
 import com.femcoders.happy_travel.repositories.UserRepository;
 import jakarta.transaction.Transactional;
