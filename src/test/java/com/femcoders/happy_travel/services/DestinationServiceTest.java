@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,12 +34,13 @@ class DestinationServiceTest {
 
     @Test
     void createDestination_shouldReturnDestinationResponse() {
+        MockMultipartFile image = new MockMultipartFile("image", "tokyo.jpg", "image/jpeg", "dummy".getBytes());
         Long userId = 1L;
         DestinationRequest destinationrequest = new DestinationRequest();
         destinationrequest.setCountry("setcountry");
         destinationrequest.setCity("setcity");
         destinationrequest.setDescription("setdescription");
-        //destinationrequest.setImageUrl("barcelona.jpg");
+        destinationrequest.setImage(image);
 
         User user = new User();
         user.setId(userId);
@@ -109,18 +111,19 @@ class DestinationServiceTest {
 
     @Test
     void updateDestination_shouldUpdateFields() {
+        MockMultipartFile image = new MockMultipartFile("image", "tokyo.jpg", "image/jpeg", "dummy".getBytes());
         DestinationRequest destinationrequest = new DestinationRequest();
         destinationrequest.setCountry("setcountry3");
         destinationrequest.setCity("setcity4");
         destinationrequest.setDescription("Ciudad del amor");
-        //destinationrequest.setImageUrl("paris.jpg");
+        destinationrequest.setImage(image);
 
         Destination destination = new Destination();
         destination.setId(1L);
         destination.setCountry("setcountry3");
         destination.setCity("setcity5");
         destination.setDescription("Otra ciudad");
-        //destination.setImageUrl("vieja.jpg");
+        destination.setImageUrl("vieja.jpg");
 
         when(destinationRepository.findById(1L)).thenReturn(Optional.of(destination));
         when(destinationRepository.save(any(Destination.class))).thenReturn(destination);
