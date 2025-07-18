@@ -7,6 +7,8 @@ import com.femcoders.happy_travel.models.Role;
 import com.femcoders.happy_travel.models.User;
 import com.femcoders.happy_travel.repositories.UserRepository;
 import com.femcoders.happy_travel.security.JwtUtils;
+import com.femcoders.happy_travel.security.UserDetailsImpl;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,24 +26,28 @@ public class AuthService {
     private final JwtUtils jwtUtils;
     private final AuthenticationManager authManager;
 
+    @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
 
         User user = User.builder()
-                .username(request.getUserName())
+                .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
 
         userRepository.save(user);
+        UserDetailsImpl userDetails = new UserDetailsImpl(user);
 
-        String token = jwtUtils.generateToken((UserDetails) user);
+        //String token = jwtUtils.generateToken((UserDetails) user);
+        String token = jwtUtils.generateToken(userDetails);
         return new AuthResponse(token);
     }
 
+    @Transactional
     public AuthResponse login(AuthRequest request) {
         Authentication auth = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
@@ -50,7 +56,9 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        String token = jwtUtils.generateToken((UserDetails) user);
+        //String token = jwtUtils.generateToken((UserDetails) user);
+        UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
+        String token = jwtUtils.generateToken(userDetails);
         return new AuthResponse(token);
     }
 }
