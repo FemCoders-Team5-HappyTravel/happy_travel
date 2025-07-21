@@ -1,3 +1,4 @@
+// Este test utiliza la base de datos H2 configurada en application-test.properties
 package com.femcoders.happy_travel.controllers;
 
 import com.femcoders.happy_travel.dtos.auth.RegisterRequest;
