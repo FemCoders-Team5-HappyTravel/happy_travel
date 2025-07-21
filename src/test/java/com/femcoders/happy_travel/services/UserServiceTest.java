@@ -25,18 +25,27 @@ class UserServiceTest {
     @InjectMocks
     private UserServiceImpl userService;
 
+    private User createUser(Long id, String username, String email) {
+        User user = new User();
+        user.setId(id);
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPassword("password");
+        return user;
+    }
+
+    private UserRequest createUserRequest(String username, String email, String password) {
+        UserRequest request = new UserRequest();
+        request.setUsername(username);
+        request.setEmail(email);
+        request.setPassword(password);
+        return request;
+    }
+
     @Test
     void createUser_shouldReturnUserResponse() {
-        UserRequest request = new UserRequest();
-        request.setUsername("testuser");
-        request.setEmail("test@example.com");
-        request.setPassword("plain password");
-
-        User savedUser = new User();
-        savedUser.setId(1L);
-        savedUser.setUsername("testuser");
-        savedUser.setEmail("test@example.com");
-        savedUser.setPassword("plain password");
+        UserRequest request = createUserRequest("testuser", "test@example.com", "plain password");
+        User savedUser = createUser(1L, "testuser", "test@example.com");
 
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
@@ -50,10 +59,7 @@ class UserServiceTest {
 
     @Test
     void getAllUsers_shouldReturnListOfUserResponses() {
-        User user = new User();
-        user.setId(1L);
-        user.setUsername("testuser");
-        user.setEmail("test@example.com");
+        User user = createUser(1L, "testuser", "test@example.com");
 
         when(userRepository.findAll()).thenReturn(List.of(user));
 
@@ -65,10 +71,7 @@ class UserServiceTest {
 
     @Test
     void getUserById_shouldReturnUserResponse() {
-        User user = new User();
-        user.setId(1L);
-        user.setUsername("testuser");
-        user.setEmail("test@example.com");
+        User user = createUser(1L, "testuser", "test@example.com");
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
@@ -88,15 +91,8 @@ class UserServiceTest {
 
     @Test
     void updateUser_shouldUpdateFields() {
-        UserRequest request = new UserRequest();
-        request.setUsername("updateduser");
-        request.setEmail("updated@example.com");
-
-        User user = new User();
-        user.setId(1L);
-        user.setUsername("olduser");
-        user.setEmail("old@example.com");
-        user.setPassword("oldpassword");
+        UserRequest request = createUserRequest("updateduser", "updated@example.com", null);
+        User user = createUser(1L, "olduser", "old@example.com");
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenReturn(user);
@@ -109,8 +105,7 @@ class UserServiceTest {
 
     @Test
     void deleteUser_shouldCallRepositoryDelete() {
-        User user = new User();
-        user.setId(1L);
+        User user = createUser(1L, "testuser", "test@example.com");
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 

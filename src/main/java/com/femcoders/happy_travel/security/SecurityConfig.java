@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -22,6 +21,7 @@ public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtAuthenticationFilter jwtAuthFilter;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -36,8 +36,13 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/destinations/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        //.anyRequest().authenticated()
-                        .anyRequest().permitAll()
+                        // ** User Endpoints with Specific Roles **
+                        .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyRole("USER", "ADMIN") // Both users and admins can view users
+                        .requestMatchers(HttpMethod.POST, "/api/users/**").hasRole("ADMIN") // Only admins can create users
+                        .requestMatchers(HttpMethod.PUT, "/api/users/**").hasRole("ADMIN") // Only admins can update users
+                        .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN") // Only admins can delete users
+                        // ** All other requests require authentication **
+                        .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
@@ -49,7 +54,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // Solo si usas AuthenticationManager explícitamente
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
