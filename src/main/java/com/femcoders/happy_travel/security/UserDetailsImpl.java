@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class UserDetailsImpl implements UserDetails {
+
     private final User user;
 
     public UserDetailsImpl(User user) {
@@ -25,8 +26,34 @@ public class UserDetailsImpl implements UserDetails {
         return user.getPassword();
     }
 
+    // This should return unique identifier (usually email)
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return user.getEmail(); // ⚠️ Consider using email here instead of username
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    // Optional: expose user if needed elsewhere
+    public User getUser() {
+        return user;
     }
 }

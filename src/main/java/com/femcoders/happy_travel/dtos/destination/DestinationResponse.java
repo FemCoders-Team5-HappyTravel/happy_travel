@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DestinationResponse {
+    private Long id;
     private String country;
     private String city;
     private String description;

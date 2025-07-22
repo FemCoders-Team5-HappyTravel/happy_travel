@@ -36,7 +36,7 @@ class DestinationMapperTest {
 
         DestinationResponse response = DestinationMapper.toResponse(destination);
 
-        //assertThat(response.getId()).isEqualTo(1L);
+        assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getCountry()).isEqualTo("setcountry");
         assertThat(response.getCity()).isEqualTo("setcity");
         assertThat(response.getDescription()).isEqualTo("setdescription");
