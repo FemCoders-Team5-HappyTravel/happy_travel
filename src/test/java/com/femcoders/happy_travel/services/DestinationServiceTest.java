@@ -130,8 +130,8 @@ class DestinationServiceTest {
 
         var response = destinationService.updateDestination(1L, destinationrequest);
 
-        assertThat(response.getCity()).isEqualTo("setcity3");
-        assertThat(response.getImageUrl()).isEqualTo("paris.jpg");
+        assertThat(response.getCity()).isEqualTo("setcity4");
+        assertThat(response.getImageUrl()).isEqualTo("tokyo.jpg");
     }
 
     @Test
