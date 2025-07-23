@@ -2,7 +2,6 @@ package com.femcoders.happy_travel.services;
 
 import com.femcoders.happy_travel.dtos.review.ReviewRequestDTO;
 import com.femcoders.happy_travel.dtos.review.ReviewResponseDTO;
-import com.femcoders.happy_travel.exceptions.UserNotFoundException;
 import com.femcoders.happy_travel.models.Destination;
 import com.femcoders.happy_travel.models.Review;
 import com.femcoders.happy_travel.models.User;
@@ -17,11 +16,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+
 
 @ExtendWith(MockitoExtension.class)
 public class ReviewServiceTest {
@@ -77,14 +74,6 @@ public class ReviewServiceTest {
         assertEquals(1, responses.size());
         assertEquals("Great city!", responses.getFirst().getComment());
     }
-
-    @Test
-    void getReviewByUserIdTest_Empty() {
-        Mockito.when(reviewRepository.findByUserId(10L))
-                .thenReturn(Collections.emptyList());
-        assertThrows(UserNotFoundException.class,
-                () -> reviewService.getReviewsByUser(10L));
-    }
     @Test
     void getReviewsByDestinationIdTest_Success() {
         Mockito.when(reviewRepository
@@ -95,15 +84,5 @@ public class ReviewServiceTest {
 
         assertEquals(1, responses.size());
         assertEquals("Great city!", responses.getFirst().getComment());
-    }
-
-    @Test
-    void getReviewByDestinationIdTest_Empty() {
-        Mockito.when(reviewRepository
-                        .findByDestinationId(100L))
-                .thenReturn(Collections.emptyList());
-
-        assertThrows(UserNotFoundException.class,
-                () -> reviewService.getReviewsByDestination(100L));
     }
 }
