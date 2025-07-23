@@ -10,9 +10,11 @@ import com.femcoders.happy_travel.repositories.UserRepository;
 import com.femcoders.happy_travel.services.DestinationService;
 import com.femcoders.happy_travel.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,6 +24,16 @@ public class DestinationServiceImpl implements DestinationService{
 
     private final DestinationRepository destinationRepository;
     private final UserRepository userRepository;
+    private final DestinationMapper destinationMapper;
+
+    @Override
+    public List<DestinationResponse> getDestinationsByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        List<Destination> destinations = destinationRepository.findAllByUserId(user.getId());
+        return destinations.stream().map(DestinationMapper::toResponse).toList();
+    }
+
 
     @Override
     public DestinationResponse createDestination(Long userId, DestinationRequest destinationRequest) {
@@ -74,6 +86,26 @@ public class DestinationServiceImpl implements DestinationService{
         Destination destination = destinationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Destination not found"));
         destinationRepository.delete(destination);
+    }
+
+    @Override
+    public boolean isUserOwner(Long userId, String username) {
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+        if (optionalUser.isEmpty()) {
+            return false;
+        }
+
+        User user = optionalUser.get();
+        return user.getId().equals(userId);
+    }
+
+    @Override
+    public List<DestinationResponse> getDestinationsByUserId(Long userId) {
+        List<Destination> destinations = destinationRepository.findAllByUserId(userId);
+        // Convert entities to DTOs
+        return destinations.stream()
+                .map(DestinationMapper::toResponse)  // Assuming you use a mapper
+                .collect(Collectors.toList());
     }
 }
 
