@@ -29,7 +29,7 @@ public class UserDetailsImpl implements UserDetails {
     // This should return unique identifier (usually email)
     @Override
     public String getUsername() {
-        return user.getEmail(); // ⚠️ Consider using email here instead of username
+        return user.getUsername();
     }
 
     @Override

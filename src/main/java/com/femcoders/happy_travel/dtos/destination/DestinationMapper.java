@@ -17,7 +17,11 @@ public class DestinationMapper {
     }
 
     public static DestinationResponse toResponse(Destination destination) {
-        return new DestinationResponse(destination.getId(), destination.getCountry(), destination.getCity(), destination.getDescription(), destination.getImageUrl());
+        return new DestinationResponse(
+                destination.getId(),
+                destination.getCountry(),
+                destination.getCity(),
+                destination.getDescription(),
+                destination.getImageUrl());
     }
-
 }

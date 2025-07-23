@@ -28,9 +28,10 @@ public class AuthService {
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists");
-        }
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new RuntimeException("User already exists");
+            }
+
 
         User user = User.builder()
                 .username(request.getUsername())
@@ -42,7 +43,6 @@ public class AuthService {
         userRepository.save(user);
         UserDetailsImpl userDetails = new UserDetailsImpl(user);
 
-        //String token = jwtUtils.generateToken((UserDetails) user);
         String token = jwtUtils.generateToken(userDetails);
         return new AuthResponse(token);
     }
@@ -50,13 +50,12 @@ public class AuthService {
     @Transactional
     public AuthResponse login(AuthRequest request) {
         Authentication auth = authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
 
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        //String token = jwtUtils.generateToken((UserDetails) user);
         UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
         String token = jwtUtils.generateToken(userDetails);
         return new AuthResponse(token);
