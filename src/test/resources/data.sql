@@ -1,4 +1,4 @@
---DELETE existing data to ensure clean state for each test run if needed
+DELETE existing data to ensure clean state for each test run if needed
 DELETE FROM reviews;
 DELETE FROM destinations;
 DELETE FROM users;

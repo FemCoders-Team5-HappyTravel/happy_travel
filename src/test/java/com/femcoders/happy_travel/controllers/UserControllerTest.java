@@ -8,58 +8,58 @@ import com.femcoders.happy_travel.models.Role;
 import com.femcoders.happy_travel.models.User;
 import com.femcoders.happy_travel.repositories.UserRepository;
 import com.femcoders.happy_travel.security.JwtUtils;
-import com.femcoders.happy_travel.services.UserDetailsServiceImpl; // Correct service import
+import com.femcoders.happy_travel.services.UserDetailsServiceImpl;
+import lombok.Getter;
+import lombok.Setter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UserDetails; // Correct Spring Security UserDetails
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
-// REMOVED: import org.springframework.test.annotation.DirtiesContext; // Remove this import
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-// Correct JUnit 5 assertions
+
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertFalse; // Make sure this is JUnit 5
-import static org.junit.jupiter.api.Assertions.assertTrue; // Make sure this is JUnit 5
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@AutoConfigureMockMvc
 @ActiveProfiles("test")
 @SpringBootTest(classes = com.femcoders.happy_travel.HappyTravelApplication.class)
-@AutoConfigureMockMvc
+
 @TestPropertySource(locations = "classpath:application-test.properties")
-@Transactional // Ensures transactions are rolled back after each test method
-// REMOVED: @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Transactional
+
 public class UserControllerTest {
 
     @Autowired
-    private MockMvc mockMvc; // Autowire MockMvc
+    private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
-    private UserRepository userRepository; // Autowire UserRepository
+    private UserRepository userRepository;
     @Autowired
-    private PasswordEncoder passwordEncoder; // Autowire PasswordEncoder
+    private PasswordEncoder passwordEncoder;
     @Autowired
-    private UserDetailsServiceImpl userDetailsService; // Autowire UserDetailsServiceImpl
+    private UserDetailsServiceImpl userDetailsService;
     @Autowired
-    private JwtUtils jwtUtils; // Autowire JwtUtils
+    private JwtUtils jwtUtils;
 
-    // REMOVED: @BeforeEach setUp() and adminJwtToken/adminUserDetails fields
-
-    // --- Definición de la clase LoginRequest como clase anidada estática ---
-    // This DTO is used to send login credentials
+    @Setter
+    @Getter
     static class LoginRequest {
-        public String username; // This field will hold the email as per UserDetailsServiceImpl
+        public String username;
         public String password;
 
         public LoginRequest(String username, String password) {
@@ -67,16 +67,8 @@ public class UserControllerTest {
             this.password = password;
         }
 
-        // Getters and Setters are necessary for ObjectMapper
-        public String getUsername() { return username; }
-        public void setUsername(String username) { this.username = username; }
-        public String getPassword() { return password; }
-        public void setPassword(String password) { this.password = password; }
     }
-    // --- Fin de la definición de LoginRequest ---
 
-
-    // Helper method to obtain a JWT token for a given username (email) and password
     private String obtainJwtToken(String email, String password) throws Exception {
         LoginRequest loginRequest = new LoginRequest(email, password);
 
@@ -89,8 +81,6 @@ public class UserControllerTest {
         return objectMapper.readTree(responseContent).get("token").asText();
     }
 
-
-    //--- GET Endpoints ---
     @Test
     @DisplayName("Should get all users as ADMIN")
     @WithMockUser(roles = {"ADMIN"})
@@ -100,8 +90,8 @@ public class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(7))) // Verify initial size if data is consistent
-                .andExpect(jsonPath("$.[0].username").value("admin"))
-                .andExpect(jsonPath("$.[0].email").value("admin@happytravel.com"));
+                .andExpect(jsonPath("$.[0].username").value("sonara"))
+                .andExpect(jsonPath("$.[0].email").value("sonara09@gmail.com"));
     }
 
     @Test
@@ -142,7 +132,7 @@ public class UserControllerTest {
     @WithMockUser(roles = {"USER"})
     @Sql("/data.sql") // Load initial data for this test
     void should_getUserById_asUser() throws Exception {
-        Long userId = 5L; // Assuming this user exists in your test data
+        Long userId = 1L;
 
         mockMvc.perform(get("/api/users/{id}", userId)
                         .accept(MediaType.APPLICATION_JSON))
@@ -277,6 +267,7 @@ public class UserControllerTest {
 
 
     //--- DELETE Endpoints ---
+    @AutoConfigureMockMvc(addFilters = false)
     @Test
     @DisplayName("Should delete a user as ADMIN")
     @Sql("/data.sql") // Load initial data for this test (ensures admin exists)
