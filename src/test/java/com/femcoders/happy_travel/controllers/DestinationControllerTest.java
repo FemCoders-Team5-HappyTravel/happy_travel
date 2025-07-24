@@ -2,17 +2,23 @@ package com.femcoders.happy_travel.controllers;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.femcoders.happy_travel.cloudinary.CloudinaryService;
 import com.femcoders.happy_travel.dtos.destination.DestinationRequest;
 import com.femcoders.happy_travel.dtos.destination.DestinationResponse;
+import com.femcoders.happy_travel.security.JwtAuthenticationFilter;
+import com.femcoders.happy_travel.security.JwtUtils;
 import com.femcoders.happy_travel.services.DestinationService;
 import com.femcoders.happy_travel.services.DestinationServiceImpl;
+import com.femcoders.happy_travel.services.UserService;
 import jakarta.annotation.Generated;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,11 +40,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(DestinationController.class)
+
+
+@SpringBootTest
+@AutoConfigureMockMvc(addFilters = false)
 public class DestinationControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -46,6 +56,18 @@ public class DestinationControllerTest {
 
     @MockBean
     private DestinationServiceImpl destinationServiceImp;
+
+    @MockBean
+    private JwtUtils jwtUtils;
+
+    @MockBean
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @MockBean
+    private CloudinaryService cloudinaryService;
+
+    @MockBean
+    private UserService userService;
 
     @BeforeEach
     void setUp() {
