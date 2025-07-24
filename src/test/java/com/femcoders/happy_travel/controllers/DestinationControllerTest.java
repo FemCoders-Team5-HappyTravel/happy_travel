@@ -2,11 +2,10 @@ package com.femcoders.happy_travel.controllers;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.femcoders.happy_travel.dtos.controllers.DestinationController;
 import com.femcoders.happy_travel.dtos.destination.DestinationRequest;
 import com.femcoders.happy_travel.dtos.destination.DestinationResponse;
-import com.femcoders.happy_travel.services.DestinationService;
 import com.femcoders.happy_travel.services.DestinationServiceImpl;
-import jakarta.annotation.Generated;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -16,7 +15,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.http.MediaType;
 
 

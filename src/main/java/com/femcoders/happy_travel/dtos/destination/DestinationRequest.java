@@ -1,4 +1,5 @@
 package com.femcoders.happy_travel.dtos.destination;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
