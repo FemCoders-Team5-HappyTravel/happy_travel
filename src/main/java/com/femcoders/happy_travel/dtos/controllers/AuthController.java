@@ -1,4 +1,4 @@
-package com.femcoders.happy_travel.controllers;
+package com.femcoders.happy_travel.dtos.controllers;
 
 import com.femcoders.happy_travel.dtos.auth.AuthRequest;
 import com.femcoders.happy_travel.dtos.auth.AuthResponse;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 

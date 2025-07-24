@@ -3,6 +3,7 @@ package com.femcoders.happy_travel.services;
 import com.femcoders.happy_travel.dtos.review.ReviewMapper;
 import com.femcoders.happy_travel.dtos.review.ReviewRequestDTO;
 import com.femcoders.happy_travel.dtos.review.ReviewResponseDTO;
+import com.femcoders.happy_travel.exceptions.UserNotFoundException;
 import com.femcoders.happy_travel.models.Destination;
 import com.femcoders.happy_travel.models.Review;
 import com.femcoders.happy_travel.models.User;
@@ -27,7 +28,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public ReviewResponseDTO createReview(Long userId, ReviewRequestDTO dto) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(userId));
 
         Destination destination = destinationRepository.findById(dto.getDestinationId())
                 .orElseThrow(() -> new RuntimeException("Destination not found"));

@@ -36,6 +36,9 @@ build/
 
 ### .env ###
 .env
+# Ignorar configuración local
+src/main/resources/application.properties
+src/main/resources/application-dev.properties
 
 ### DS ###
 . DS_Store
