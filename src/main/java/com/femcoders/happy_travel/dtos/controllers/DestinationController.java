@@ -1,4 +1,4 @@
-package com.femcoders.happy_travel.controllers;
+package com.femcoders.happy_travel.dtos.controllers;
 
 import com.femcoders.happy_travel.dtos.destination.DestinationRequest;
 import com.femcoders.happy_travel.dtos.destination.DestinationResponse;

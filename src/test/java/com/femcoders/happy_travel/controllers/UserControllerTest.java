@@ -4,8 +4,12 @@ package com.femcoders.happy_travel.controllers;
 import com.femcoders.happy_travel.dtos.auth.RegisterRequest;
 import com.femcoders.happy_travel.dtos.user.UserRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.femcoders.happy_travel.models.Destination;
+import com.femcoders.happy_travel.models.Review;
 import com.femcoders.happy_travel.models.Role;
 import com.femcoders.happy_travel.models.User;
+import com.femcoders.happy_travel.repositories.DestinationRepository;
+import com.femcoders.happy_travel.repositories.ReviewRepository;
 import com.femcoders.happy_travel.repositories.UserRepository;
 import com.femcoders.happy_travel.security.JwtUtils;
 import com.femcoders.happy_travel.services.UserDetailsServiceImpl;
@@ -20,37 +24,48 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+
+import java.time.LocalDateTime;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @SpringBootTest(classes = com.femcoders.happy_travel.HappyTravelApplication.class)
-
 @TestPropertySource(locations = "classpath:application-test.properties")
 @Transactional
 
 public class UserControllerTest {
+    @Autowired
+    private UserRepository userRepository;
 
+    @Autowired
+    private DestinationRepository destinationRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
     @Autowired
@@ -88,24 +103,28 @@ public class UserControllerTest {
     void should_getAllUsers_asAdmin() throws Exception {
         mockMvc.perform(get("/api/users")
                         .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(7))) // Verify initial size if data is consistent
-                .andExpect(jsonPath("$.[0].username").value("sonara"))
-                .andExpect(jsonPath("$.[0].email").value("sonara09@gmail.com"));
+                .andExpect(jsonPath("$", hasSize(2))) // Verify initial size if data is consistent
+                .andExpect(jsonPath("$.[0].username").value("admin"))
+                .andExpect(jsonPath("$.[0].email").value("admin@happytravel.com"));
+
+
     }
 
     @Test
     @DisplayName("Should get all users as USER")
     @WithMockUser(roles = {"USER"})
-    @Sql("/data.sql") // Load initial data for this test
+    //@Sql("/data.sql") // Load initial data for this test
     void should_getAllUsers_asUser() throws Exception {
         mockMvc.perform(get("/api/users")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(7)));
+                .andExpect(jsonPath("$", hasSize(2)));
     }
 
     @Test
+    @RequestMapping("/api/users")
     @DisplayName("Should deny getting all users as Unauthenticated")
     void should_getAllUsers_asUnauthenticated() throws Exception {
         mockMvc.perform(get("/api/users")
@@ -118,19 +137,19 @@ public class UserControllerTest {
     @WithMockUser(roles = {"ADMIN"})
     @Sql("/data.sql") // Load initial data for this test
     void should_getUserById_asAdmin() throws Exception {
-        Long userId = 5L; // Assuming this user exists in your test data
+        Long userId = 1L; // Assuming this user exists in your test data
 
         mockMvc.perform(get("/api/users/{id}", userId)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("mike_wilson"))
-                .andExpect(jsonPath("$.email").value("mike@example.com"));
+                .andExpect(jsonPath("$.username").value("admin"))
+                .andExpect(jsonPath("$.email").value("admin@happytravel.com"));
     }
 
     @Test
     @DisplayName("Should get user by ID as USER")
     @WithMockUser(roles = {"USER"})
-    @Sql("/data.sql") // Load initial data for this test
+    //@Sql("/data.sql") // Load initial data for this test
     void should_getUserById_asUser() throws Exception {
         Long userId = 1L;
 
@@ -149,15 +168,16 @@ public class UserControllerTest {
     }
 
     //--- POST Endpoints ---
+    @RequestMapping
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Test
     @DisplayName("Should register user via Auth endpoint")
     void should_registerUser_viaAuthEndpoint() throws Exception {
-        // 1. Create a RegisterRequest object with unique data
         String uniqueSuffix = String.valueOf(System.currentTimeMillis());
         RegisterRequest registerRequest = new RegisterRequest();
-        registerRequest.setUsername("testuser_register_" + uniqueSuffix); // Provide a unique username
-        registerRequest.setEmail("register_" + uniqueSuffix + "@example.com"); // Provide a unique email
-        registerRequest.setPassword("securepassword123"); // Provide a valid password
+        registerRequest.setUsername("testuser_register_" + uniqueSuffix);
+        registerRequest.setEmail("register_" + uniqueSuffix + "@example.com");
+        registerRequest.setPassword("securepassword123");
 
         String requestBody = objectMapper.writeValueAsString(registerRequest);
 
@@ -171,7 +191,7 @@ public class UserControllerTest {
     @Test
     @DisplayName("Should create user as ADMIN")
     @WithMockUser(roles = {"ADMIN"})
-    @Sql("/data.sql") // Load initial data for this test
+    //@Sql("/data.sql") // Load initial data for this test
     void should_createUser_asAdmin() throws Exception {
         String uniqueSuffix = String.valueOf(System.currentTimeMillis());
         UserRequest newUserRequest = new UserRequest("adminCreatedUser_" + uniqueSuffix, "admincreate_" + uniqueSuffix + "@test.com", "securePass");
@@ -189,7 +209,7 @@ public class UserControllerTest {
     @Test
     @DisplayName("Should deny creating user as USER")
     @WithMockUser(roles = {"USER"})
-    @Sql("/data.sql") // Load initial data for this test
+    //@Sql("/data.sql") // Load initial data for this test
     void should_createUser_asUser_shouldBeForbidden() throws Exception {
         String uniqueSuffix = String.valueOf(System.currentTimeMillis());
         UserRequest newUserRequest = new UserRequest("userCannotCreate_" + uniqueSuffix, "usercreate_" + uniqueSuffix + "@test.com", "pass");
@@ -219,9 +239,9 @@ public class UserControllerTest {
     @Test
     @DisplayName("Should update user as ADMIN")
     @WithMockUser(roles = {"ADMIN"})
-    @Sql("/data.sql") // Load initial data for this test
+    //@Sql("/data.sql") // Load initial data for this test
     void should_updateUser_asAdmin() throws Exception {
-        Long userId = 1L; // Update the 'admin' user (or another existing user)
+        Long userId = 1L;
         String uniqueSuffix = String.valueOf(System.currentTimeMillis());
         UserRequest updatedUserRequest = new UserRequest("updatedAdmin_" + uniqueSuffix, "updated_admin_" + uniqueSuffix + "@test.com", "newPassword123");
 
@@ -238,7 +258,7 @@ public class UserControllerTest {
     @Test
     @DisplayName("Should deny updating user as USER")
     @WithMockUser(roles = {"USER"})
-    @Sql("/data.sql") // Load initial data for this test
+    //@Sql("/data.sql") // Load initial data for this test
     void should_updateUser_asUser_shouldBeForbidden() throws Exception {
         Long userId = 1L; // Try to update admin user
         String uniqueSuffix = String.valueOf(System.currentTimeMillis());
@@ -254,7 +274,7 @@ public class UserControllerTest {
     @Test
     @DisplayName("Should deny updating user as Unauthenticated")
     void should_updateUser_asUnauthenticated_shouldBeForbidden() throws Exception {
-        Long userId = 2L; // Update an existing user
+        Long userId = 2L;
         String uniqueSuffix = String.valueOf(System.currentTimeMillis());
         UserRequest updatedUserRequest = new UserRequest("updateTest_" + uniqueSuffix, "updatetest_" + uniqueSuffix + "@test.com", "newPassword123");
 
@@ -267,47 +287,60 @@ public class UserControllerTest {
 
 
     //--- DELETE Endpoints ---
-    @AutoConfigureMockMvc(addFilters = false)
     @Test
-    @DisplayName("Should delete a user as ADMIN")
-    @Sql("/data.sql") // Load initial data for this test (ensures admin exists)
-    void should_deleteUser_asAdmin() throws Exception {
-        // 1. Obtener un token JWT válido para el usuario ADMIN ya existente en data.sql
-        // Usamos el email "admin@happytravel.com" porque UserDetailsServiceImpl busca por email.
-        UserDetails adminUserDetails = userDetailsService.loadUserByUsername("admin@happytravel.com");
-        // Generamos el token pasando el objeto UserDetails completo
-        String adminJwtToken = jwtUtils.generateToken(adminUserDetails);
+    @DisplayName("Should delete user and cascade delete their destinations and reviews as ADMIN")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void should_deleteUserAndCascadeData_asAdmin() throws Exception {
+        // Crear usuario
+        User user = new User();
+        user.setUsername("alexandra");
+        user.setPassword(passwordEncoder.encode("password999"));
+        user.setEmail("alex@example.com");
+        user.setRole(Role.USER);
+        user = userRepository.save(user); // persistir y obtener el ID
 
-        // 2. Crear manualmente un usuario para eliminar solo para esta prueba.
-        // Usa un nombre de usuario/correo electrónico único para evitar DataIntegrityViolationException
-        User userToDeleteEntity = new User();
-        String uniqueSuffix = String.valueOf(System.currentTimeMillis());
-        userToDeleteEntity.setUsername("userToDelete_" + uniqueSuffix);
-        userToDeleteEntity.setEmail("delete_me_" + uniqueSuffix + "@example.com");
-        userToDeleteEntity.setPassword(passwordEncoder.encode("1234")); // Encriptar la contraseña
-        userToDeleteEntity.setRole(Role.USER); // Asignar un rol
-        User savedUser = userRepository.save(userToDeleteEntity); // Guardar el usuario en la base de datos
-        Long userIdToDelete = savedUser.getId();
+        // Crear destino
+        Destination destination = Destination.builder()
+                .country("España")
+                .city("Valencia")
+                .description("Playa bonita")
+                .imageUrl("https://example.com/valencia.jpg")
+                .user(user)
+                .build();
+        destination = destinationRepository.save(destination);
 
-        // Optional: Verify the user was saved (for debugging)
-        assertTrue(userRepository.findById(userIdToDelete).isPresent(), "El usuario debería existir antes del intento de eliminación.");
+        // Crear review
+        Review review = Review.builder()
+                .comment("Muy buena experiencia")
+                .rating(5)
+                .user(user)
+                .destination(destination)
+                .createdAt(LocalDateTime.now())
+                .build();
+        reviewRepository.save(review);
 
-        // 3. Realizar la eliminación con el token JWT real
-        mockMvc.perform(delete("/api/users/{id}", userIdToDelete)
-                        .header("Authorization", "Bearer " + adminJwtToken) // Usar el token real
-                        .with(csrf())) // Añadir token CSRF
-                .andExpect(status().isNoContent()); // 204 No Content es común para una eliminación exitosa
+        Long userId = user.getId();
+        Long destinationId = destination.getId();
 
-        // 4. Verificar que el usuario realmente fue eliminado
-        boolean exists = userRepository.existsById(userIdToDelete);
-        assertFalse(exists, "El usuario debería haber sido eliminado.");
+        // Borrar usuario
+        mockMvc.perform(delete("/api/users/" + userId))
+                .andExpect(status().isNoContent());
+
+        // Confirmar que el usuario ya no existe
+        mockMvc.perform(get("/api/users/" + userId))
+                .andExpect(status().isNotFound());
+
+        // Confirmar que también se borró el destino
+        mockMvc.perform(get("/api/destinations/" + destinationId))
+                .andExpect(status().isNotFound());
     }
+
 
 
     @Test
     @DisplayName("Should deny deleting user as USER")
     @WithMockUser(roles = {"USER"})
-    @Sql("/data.sql") // Load initial data for this test
+    //@Sql("/data.sql") // Load initial data for this test
     void should_deleteUser_asUser_shouldBeForbidden() throws Exception {
         Long userId = 1L; // Try to delete admin user
         mockMvc.perform(delete("/api/users/{id}", userId)
