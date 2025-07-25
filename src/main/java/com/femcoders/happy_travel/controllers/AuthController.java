@@ -1,4 +1,4 @@
-package com.femcoders.happy_travel.dtos.controllers;
+package com.femcoders.happy_travel.controllers;
 
 import com.femcoders.happy_travel.dtos.auth.AuthRequest;
 import com.femcoders.happy_travel.dtos.auth.AuthResponse;

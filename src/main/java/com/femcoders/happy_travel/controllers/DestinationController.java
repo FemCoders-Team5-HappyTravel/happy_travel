@@ -1,4 +1,4 @@
-package com.femcoders.happy_travel.dtos.controllers;
+package com.femcoders.happy_travel.controllers;
 
 import com.femcoders.happy_travel.dtos.destination.DestinationRequest;
 import com.femcoders.happy_travel.dtos.destination.DestinationResponse;
@@ -64,8 +64,8 @@ public class DestinationController {
 //?no funciona preguntar a May si estaba funcionando antes?
     @PostMapping ("user/{id}")
     public ResponseEntity<DestinationResponse> createDestination(
-            @RequestParam Long userId,
-            @ModelAttribute DestinationRequest destinationRequest
+            @PathVariable Long userId,
+            @RequestBody DestinationRequest destinationRequest
     ) {
         DestinationResponse response = destinationService.createDestination(userId, destinationRequest);
         return ResponseEntity.ok(response);
