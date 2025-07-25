@@ -65,7 +65,7 @@ En tu `application.properties` solo debes tener lo esencial, por ejemplo:
 spring.application.name=happy_travel
 spring.profiles.active=dev
 spring.jpa.hibernate.ddl-auto=update
-server.port=8082
+server.port=8080
 ```
 
 ---
@@ -125,7 +125,7 @@ void setUp() {
 Puedes probar la API desde:
 
 ```
-http://localhost:8082/swagger-ui/index.html
+http://localhost:8080/swagger-ui/index.html
 ```
 
 - Haz login y copia el token.
