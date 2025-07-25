@@ -3,6 +3,8 @@ package com.femcoders.happy_travel.services;
 import com.femcoders.happy_travel.dtos.user.UserRequest;
 import com.femcoders.happy_travel.dtos.user.UserResponse;
 import com.femcoders.happy_travel.dtos.user.UserMapper;
+import com.femcoders.happy_travel.exceptions.UserAlreadyExistsException;
+import com.femcoders.happy_travel.exceptions.UserNotFoundException;
 import com.femcoders.happy_travel.models.User;
 import com.femcoders.happy_travel.repositories.UserRepository;
 import jakarta.transaction.Transactional;
@@ -20,6 +22,9 @@ public class UserServiceImpl implements UserService  {
 
     @Override
     public UserResponse createUser(UserRequest request) {
+        if (userRepository.existsByEmail(request.getEmail()))
+            throw new UserAlreadyExistsException(request.getEmail());
+
         User user = UserMapper.toEntity(request);
         User savedUser = userRepository.save(user);
         return UserMapper.toResponse(savedUser);
@@ -36,7 +41,7 @@ public class UserServiceImpl implements UserService  {
     @Override
     public UserResponse getUserById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new UserNotFoundException(id));
         return UserMapper.toResponse(user);
     }
 
@@ -44,7 +49,13 @@ public class UserServiceImpl implements UserService  {
     @Transactional
     public UserResponse updateUser(Long id, UserRequest request) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new UserNotFoundException(id));
+        if (!user.getEmail().equals(request.getEmail()) &&
+                userRepository.existsByEmail(request.getEmail())) {
+            throw new UserAlreadyExistsException(request.getEmail());
+        }
+
+
 
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
@@ -57,7 +68,7 @@ public class UserServiceImpl implements UserService  {
     @Override
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new UserNotFoundException(id));
         userRepository.delete(user);
     }
 
