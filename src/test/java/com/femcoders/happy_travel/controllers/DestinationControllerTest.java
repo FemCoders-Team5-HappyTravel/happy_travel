@@ -2,6 +2,7 @@ package com.femcoders.happy_travel.controllers;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.femcoders.happy_travel.dtos.controllers.DestinationController;
 import com.femcoders.happy_travel.dtos.destination.DestinationRequest;
 import com.femcoders.happy_travel.dtos.destination.DestinationResponse;
 import com.femcoders.happy_travel.services.DestinationService;
