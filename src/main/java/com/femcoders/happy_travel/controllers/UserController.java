@@ -6,13 +6,14 @@ import com.femcoders.happy_travel.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-    @RequestMapping("/users")
-    @RequiredArgsConstructor
+        @RestController
+        @RequestMapping("/users")
+        @RequiredArgsConstructor
 
     public class UserController {
 
@@ -29,19 +30,19 @@ import java.util.List;
             UserResponse user = userService.getUserById(id);
             return ResponseEntity.ok(user);
         }
-
+        @PreAuthorize("hasRole('ADMIN')")
         @PostMapping
         public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest userRequest) {
             UserResponse createdUser = userService.createUser(userRequest);
             return ResponseEntity.ok(createdUser);
         }
-
+        @PreAuthorize("hasRole('ADMIN')")
         @PutMapping("/{id}")
         public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequest userRequest) {
             UserResponse updatedUser = userService.updateUser(id, userRequest);
             return ResponseEntity.ok(updatedUser);
         }
-
+        @PreAuthorize("hasRole('ADMIN')")
         @DeleteMapping("/{id}")
         public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
             userService.deleteUser(id);
