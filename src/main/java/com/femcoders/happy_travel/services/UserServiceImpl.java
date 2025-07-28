@@ -3,10 +3,13 @@ package com.femcoders.happy_travel.services;
 import com.femcoders.happy_travel.dtos.user.UserRequest;
 import com.femcoders.happy_travel.dtos.user.UserResponse;
 import com.femcoders.happy_travel.dtos.user.UserMapper;
+import com.femcoders.happy_travel.exceptions.UserNotFoundException;
 import com.femcoders.happy_travel.models.User;
 import com.femcoders.happy_travel.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService  {
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
@@ -36,7 +39,7 @@ public class UserServiceImpl implements UserService  {
     @Override
     public UserResponse getUserById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new UserNotFoundException(id));
         return UserMapper.toResponse(user);
     }
 
@@ -44,7 +47,7 @@ public class UserServiceImpl implements UserService  {
     @Transactional
     public UserResponse updateUser(Long id, UserRequest request) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new UserNotFoundException(id));
 
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
@@ -57,7 +60,13 @@ public class UserServiceImpl implements UserService  {
     @Override
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new UserNotFoundException(id));
         userRepository.delete(user);
+    }
+
+    @Override
+    public Page<UserResponse> getUsersPage(Pageable pageable) {
+        return userRepository.findAll(pageable)
+                .map(UserMapper::toResponse);
     }
 }
