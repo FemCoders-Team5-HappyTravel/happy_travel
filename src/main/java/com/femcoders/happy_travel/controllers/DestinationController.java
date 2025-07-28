@@ -2,12 +2,16 @@ package com.femcoders.happy_travel.controllers;
 
 import com.femcoders.happy_travel.dtos.destination.DestinationRequest;
 import com.femcoders.happy_travel.dtos.destination.DestinationResponse;
+import com.femcoders.happy_travel.models.User;
+import com.femcoders.happy_travel.security.UserDetailsImpl;
 import com.femcoders.happy_travel.services.DestinationService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,8 +50,6 @@ public class DestinationController {
             loggedInUsername = principal.toString();
         }
 
-
-
         // Call your service to check if loggedInUsername matches userId's owner or do the validation here
         // Assuming destinationService has a method to get username by userId (or adapt accordingly)
 
@@ -59,14 +61,14 @@ public class DestinationController {
         List<DestinationResponse> destinations = destinationService.getDestinationsByUserId(userId);
         return ResponseEntity.ok(destinations);
     }
-
-
-//?no funciona preguntar a May si estaba funcionando antes?
-    @PostMapping ("user/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PostMapping ("/user/userId")
     public ResponseEntity<DestinationResponse> createDestination(
-            @RequestParam Long userId,
-            @ModelAttribute DestinationRequest destinationRequest
+            @AuthenticationPrincipal UserDetailsImpl currentUserDetails,
+            @RequestBody DestinationRequest destinationRequest
     ) {
+        User authenticatedUser = currentUserDetails.getUser();
+        Long userId = authenticatedUser.getId();
         DestinationResponse response = destinationService.createDestination(userId, destinationRequest);
         return ResponseEntity.ok(response);
     }
