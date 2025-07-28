@@ -25,7 +25,7 @@ public class DestinationRequest {
     private String description;
 
     @NotNull
-    private MultipartFile image;
+    private String image;
 }
 
 
