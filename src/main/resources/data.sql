@@ -1,14 +1,14 @@
-SHOW TABLES;
+--SHOW TABLES;
 
-DROP TABLE destinations, reviews, users;
+--DROP TABLE destinations, reviews, users;
 
-DESCRIBE destinations;
-DESCRIBE reviews;
-DESCRIBE users;
+--DESCRIBE destinations;
+--DESCRIBE reviews;
+--DESCRIBE users;
 
-SELECT * FROM destinations;
-SELECT * FROM reviews;
-SELECT * FROM users;
+--SELECT * FROM destinations;
+--SELECT * FROM reviews;
+--SELECT * FROM users;
 
 --password123
 --adminpass
