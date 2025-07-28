@@ -40,7 +40,7 @@ public class DestinationServiceImpl implements DestinationService{
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        String imageUrl = destinationRequest.getImage().getOriginalFilename();
+        String imageUrl = destinationRequest.getImage();
 
         Destination destination = DestinationMapper.toEntity(destinationRequest, imageUrl);
         destination.setUser(user);
@@ -74,7 +74,7 @@ public class DestinationServiceImpl implements DestinationService{
         destination.setDescription(destinationRequest.getDescription());
 
         if (destinationRequest.getImage() != null && !destinationRequest.getImage().isEmpty()) {
-            destination.setImageUrl(destinationRequest.getImage().getOriginalFilename());
+            destination.setImageUrl(destinationRequest.getImage());
         }
 
         Destination updated = destinationRepository.save(destination);
