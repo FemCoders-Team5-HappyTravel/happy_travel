@@ -5,6 +5,9 @@ import com.femcoders.happy_travel.dtos.destination.DestinationResponse;
 import com.femcoders.happy_travel.models.User;
 import com.femcoders.happy_travel.security.UserDetailsImpl;
 import com.femcoders.happy_travel.services.DestinationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,15 +20,16 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-
 @RestController
 @RequestMapping("/destinations")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 public class DestinationController {
 
     private final DestinationService destinationService;
 
-    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Get destinations of the authenticated user")
+    @ApiResponse(responseCode = "200", description = "List of destinations")
     @GetMapping("/user")
     public ResponseEntity<List<DestinationResponse>> getDestinationsByAuthenticatedUser(Authentication authentication) {
         String username = authentication.getName();
@@ -33,14 +37,14 @@ public class DestinationController {
         return ResponseEntity.ok(destinations);
     }
 
-
-    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Get destinations by specific user ID (owner-only access)")
+    @ApiResponse(responseCode = "200", description = "List of destinations for given user ID")
+    @ApiResponse(responseCode = "403", description = "Forbidden - not owner")
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<DestinationResponse>> getDestinationsByUser(
-            @PathVariable Long userId,
+            @Parameter(description = "User ID") @PathVariable Long userId,
             Authentication authentication
     ) {
-        // Extract username from authenticated principal
         String loggedInUsername;
         Object principal = authentication.getPrincipal();
 
@@ -50,9 +54,6 @@ public class DestinationController {
             loggedInUsername = principal.toString();
         }
 
-        // Call your service to check if loggedInUsername matches userId's owner or do the validation here
-        // Assuming destinationService has a method to get username by userId (or adapt accordingly)
-
         boolean isOwner = destinationService.isUserOwner(userId, loggedInUsername);
         if (!isOwner) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -61,8 +62,11 @@ public class DestinationController {
         List<DestinationResponse> destinations = destinationService.getDestinationsByUserId(userId);
         return ResponseEntity.ok(destinations);
     }
+
+    @Operation(summary = "Create a new destination for the authenticated user")
+    @ApiResponse(responseCode = "200", description = "Destination created")
+    @PostMapping("/user/userId")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    @PostMapping ("/user/userId")
     public ResponseEntity<DestinationResponse> createDestination(
             @AuthenticationPrincipal UserDetailsImpl currentUserDetails,
             @RequestBody DestinationRequest destinationRequest
@@ -73,26 +77,39 @@ public class DestinationController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Get all destinations")
+    @ApiResponse(responseCode = "200", description = "List of all destinations")
     @GetMapping
     public ResponseEntity<List<DestinationResponse>> getAllDestinations() {
         return ResponseEntity.ok(destinationService.getAllDestinations());
     }
 
+    @Operation(summary = "Get a destination by ID")
+    @ApiResponse(responseCode = "200", description = "Destination details")
+    @ApiResponse(responseCode = "404", description = "Destination not found")
     @GetMapping("/{id}")
-    public ResponseEntity<DestinationResponse> getDestinationById(@PathVariable Long id) {
+    public ResponseEntity<DestinationResponse> getDestinationById(
+            @Parameter(description = "Destination ID") @PathVariable Long id
+    ) {
         return ResponseEntity.ok(destinationService.getDestinationById(id));
     }
 
+    @Operation(summary = "Update an existing destination")
+    @ApiResponse(responseCode = "200", description = "Destination updated")
     @PutMapping("/{id}")
     public ResponseEntity<DestinationResponse> updateDestination(
-            @PathVariable Long id,
+            @Parameter(description = "Destination ID") @PathVariable Long id,
             @ModelAttribute DestinationRequest request
     ) {
         return ResponseEntity.ok(destinationService.updateDestination(id, request));
     }
 
+    @Operation(summary = "Delete a destination")
+    @ApiResponse(responseCode = "204", description = "Destination deleted")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDestination(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteDestination(
+            @Parameter(description = "Destination ID") @PathVariable Long id
+    ) {
         destinationService.deleteDestination(id);
         return ResponseEntity.noContent().build();
     }
