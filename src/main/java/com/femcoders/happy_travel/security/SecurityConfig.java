@@ -49,7 +49,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/destinations/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/destinations/user").authenticated()
+                        .requestMatchers("/destinations/user/**").authenticated() // permite todas las rutas que empiecen con /destinations/user/ (como /user/3)
 
 
                         .anyRequest().authenticated()
