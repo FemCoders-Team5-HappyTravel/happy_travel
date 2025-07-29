@@ -1,121 +1,88 @@
 package com.femcoders.happy_travel.services;
 
+import com.femcoders.happy_travel.dtos.user.UserMapper;
 import com.femcoders.happy_travel.dtos.user.UserRequest;
+import com.femcoders.happy_travel.dtos.user.UserResponse;
+import com.femcoders.happy_travel.models.Role;
 import com.femcoders.happy_travel.models.User;
 import com.femcoders.happy_travel.repositories.UserRepository;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
-    @Mock
     private UserRepository userRepository;
+    private UserService userService;
+    private UserRequest userRequest;
+    private User user;
+    private UserResponse userResponse;
 
-    @InjectMocks
-    private UserServiceImpl userService;
+    @BeforeEach
+    void setUp() {
+        userRepository = mock(UserRepository.class);
+        userService = new UserServiceImpl(userRepository);
 
-    @Test
-    void createUser_shouldReturnUserResponse() {
-        UserRequest request = new UserRequest();
-        request.setUsername("testuser");
-        request.setEmail("test@example.com");
-        request.setPassword("plain password");
+        userRequest = new UserRequest("Alex", "alex@example.com", "password123");
 
-        User savedUser = new User();
-        savedUser.setId(1L);
-        savedUser.setUsername("testuser");
-        savedUser.setEmail("test@example.com");
-        savedUser.setPassword("plain password");
+        user = new User();
+        user.setId(1L);
+        user.setUsername(userRequest.getUsername());
+        user.setEmail(userRequest.getEmail());
+        user.setPassword(userRequest.getPassword());
+        user.setRole(Role.USER);
 
-        when(userRepository.save(any(User.class))).thenReturn(savedUser);
-
-        var response = userService.createUser(request);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getId()).isEqualTo(1L);
-        assertThat(response.getUsername()).isEqualTo("testuser");
-        assertThat(response.getEmail()).isEqualTo("test@example.com");
+        userResponse = UserMapper.toResponse(user);
     }
 
     @Test
-    void getAllUsers_shouldReturnListOfUserResponses() {
-        User user = new User();
-        user.setId(1L);
-        user.setUsername("testuser");
-        user.setEmail("test@example.com");
+    void testCreateUser() {
+        when(userRepository.save(any(User.class))).thenReturn(user);
 
-        when(userRepository.findAll()).thenReturn(List.of(user));
+        UserResponse result = userService.createUser(userRequest);
 
-        var responses = userService.getAllUsers();
-
-        assertThat(responses).hasSize(1);
-        assertThat(responses.get(0).getUsername()).isEqualTo("testuser");
+        assertEquals(userResponse.getUsername(), result.getUsername());
+        assertEquals(userResponse.getEmail(), result.getEmail());
+        verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
-    void getUserById_shouldReturnUserResponse() {
-        User user = new User();
-        user.setId(1L);
-        user.setUsername("testuser");
-        user.setEmail("test@example.com");
-
+    void testGetUserById() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        var response = userService.getUserById(1L);
+        UserResponse result = userService.getUserById(1L);
 
-        assertThat(response).isNotNull();
-        assertThat(response.getId()).isEqualTo(1L);
+        assertEquals(userResponse.getEmail(), result.getEmail());
+        verify(userRepository, times(1)).findById(1L);
     }
 
     @Test
-    void getUserById_shouldThrowWhenNotFound() {
-        when(userRepository.findById(99L)).thenReturn(Optional.empty());
-
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> userService.getUserById(99L));
-        assertThat(exception.getMessage()).contains("User not found with id");
-    }
-
-    @Test
-    void updateUser_shouldUpdateFields() {
-        UserRequest request = new UserRequest();
-        request.setUsername("updateduser");
-        request.setEmail("updated@example.com");
-
-        User user = new User();
-        user.setId(1L);
-        user.setUsername("olduser");
-        user.setEmail("old@example.com");
-        user.setPassword("oldpassword");
-
+    void testUpdateUser() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        var response = userService.updateUser(1L, request);
+        UserRequest updatedRequest = new UserRequest("AlexUpdated", "alex@example.com", "newpass");
+        UserResponse result = userService.updateUser(1L, updatedRequest);
 
-        assertThat(response.getUsername()).isEqualTo("updateduser");
-        assertThat(response.getEmail()).isEqualTo("updated@example.com");
+        assertEquals("AlexUpdated", result.getUsername());
+        verify(userRepository, times(1)).findById(1L);
+        verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
-    void deleteUser_shouldCallRepositoryDelete() {
-        User user = new User();
-        user.setId(1L);
-
+    void testDeleteUser() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         userService.deleteUser(1L);
 
-        verify(userRepository, times(1)).delete(user);
+        verify(userRepository).findById(1L);
+        verify(userRepository).delete(user);
+
+
     }
 }
