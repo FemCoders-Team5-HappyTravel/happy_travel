@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 
 
 
-@Component
 public class DestinationMapper {
     public static Destination toEntity(DestinationRequest destinationRequest, String imageUrl) {
         return Destination.builder()
