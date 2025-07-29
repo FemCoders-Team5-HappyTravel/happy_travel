@@ -153,3 +153,4 @@ public class DestinationController {
         return ResponseEntity.ok(destinationService.getDestinationsPage(pageable));
     }
 }
+
