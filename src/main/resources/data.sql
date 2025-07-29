@@ -1,19 +1,5 @@
---SHOW TABLES;
-
---DROP TABLE destinations, reviews, users;
-
---DESCRIBE destinations;
---DESCRIBE reviews;
---DESCRIBE users;
-
---SELECT * FROM destinations;
---SELECT * FROM reviews;
---SELECT * FROM users;
-
---password123
---adminpass
-
--- USERS (5 standard + 1 admin)
+-- password123
+-- adminpass
 INSERT INTO users (id, username, email, password, role) VALUES
 (1, 'alice', 'alice@example.com', '$2a$10$0FfOnnkUKbq5utlMMOCzwevrOQpiTUd8LK0jIcUQv7V2XIIqwfxC.', 'USER'),
 (2, 'bob', 'bob@example.com', '$2a$10$98WVBNb.kTLzWhVIwqKtteqoxFwdITJAR.sIKJI8arWXMicRCzDAO', 'USER'),
@@ -22,8 +8,6 @@ INSERT INTO users (id, username, email, password, role) VALUES
 (5, 'eve', 'eve@example.com', '$2a$10$QPfCclgd.SunEFi4.vRmvObDJVu5MGVKr.kyt9VkBkKNnfs8KLp92', 'USER'),
 (6, 'admin', 'admin@example.com', '$2a$10$JVskeCkUBXd.AeyDwEwu0uIRAvqCXUo7NX3K568/zFy4i5Ph.ezEq', 'ADMIN');
 
--- DESTINATIONS (5 per regular user = 25 total)
--- All use the same Unsplash image
 INSERT INTO destinations (id, country, city, description, image_url, user_id) VALUES
 (1, 'France', 'Paris', 'The city of lights', 'https://images.unsplash.com/photo-1751210392423-d8988823cb6d?q=80&w=1035&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 1),
 (2, 'Italy', 'Rome', 'The eternal city', 'https://images.unsplash.com/photo-1751210392423-d8988823cb6d?q=80&w=1035&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 1),
@@ -55,9 +39,6 @@ INSERT INTO destinations (id, country, city, description, image_url, user_id) VA
 (24, 'UAE', 'Dubai', 'Modern desert city', 'https://images.unsplash.com/photo-1751210392423-d8988823cb6d?q=80&w=1035&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 5),
 (25, 'Portugal', 'Lisbon', 'Colorful and coastal', 'https://images.unsplash.com/photo-1751210392423-d8988823cb6d?q=80&w=1035&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 5);
 
--- REVIEWS (5 users x 25 destinations = 125 rows)
-
--- REVIEWS (user_id 1–5 for destination_id 1–25)
 INSERT INTO reviews (id, rating, comment, user_id, destination_id, created_at) VALUES
 (1, 5, 'Review by user 1 on destination 1', 1, 1, CURRENT_TIMESTAMP),
 (2, 4, 'Review by user 2 on destination 1', 2, 1, CURRENT_TIMESTAMP),
