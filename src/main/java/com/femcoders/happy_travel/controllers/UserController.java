@@ -31,7 +31,7 @@ public class UserController {
     @Operation(summary = "Get all users", description = "Returns a list of all registered users. Requires ADMIN role.")
     @ApiResponse(responseCode = "200", description = "List of users retrieved")
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         List<UserResponse> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
@@ -43,7 +43,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found")
     })
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/{id}")
+        @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(
             @Parameter(description = "ID of the user to retrieve", required = true)
             @PathVariable Long id) {

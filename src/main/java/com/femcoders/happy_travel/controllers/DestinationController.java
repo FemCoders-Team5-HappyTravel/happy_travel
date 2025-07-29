@@ -91,7 +91,7 @@
         @Operation(summary = "Get a destination by ID")
         @ApiResponse(responseCode = "200", description = "Destination details")
         @ApiResponse(responseCode = "404", description = "Destination not found")
-        @GetMapping("/{id}")
+        @GetMapping("/:id")
         public ResponseEntity<DestinationResponse> getDestinationById(
                 @Parameter(description = "Destination ID") @PathVariable Long id
         ) {
