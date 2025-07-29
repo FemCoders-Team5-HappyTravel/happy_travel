@@ -21,7 +21,6 @@ public class SqlConfig implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         try (Connection connection = dataSource.getConnection()) {
             ScriptUtils.executeSqlScript(connection, new ClassPathResource("data.sql"));
-            System.out.println("✅ data.sql executed via SqlConfig");
         }
     }
 }
