@@ -1,5 +1,7 @@
 package com.femcoders.happy_travel.controllers;
 
+import com.femcoders.happy_travel.dtos.ForgotPasswordRequest;
+import com.femcoders.happy_travel.dtos.ResetPasswordRequest;
 import com.femcoders.happy_travel.dtos.auth.AuthRequest;
 import com.femcoders.happy_travel.dtos.auth.AuthResponse;
 import com.femcoders.happy_travel.dtos.auth.RegisterRequest;
@@ -64,8 +66,8 @@ public class AuthController {
             @ApiResponse(responseCode = "404", description = "Email not found")
     })
     @PostMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> request) {
-        String email = request.get("email");
+    public ResponseEntity<String> forgotPassword(@RequestBody @Valid ForgotPasswordRequest request) {
+        String email = request.getEmail();
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("No user with email"));
@@ -90,9 +92,9 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "Invalid or expired token")
     })
     @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> request) {
-        String token = request.get("token");
-        String newPassword = request.get("newPassword");
+    public ResponseEntity<String> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+        String token = request.getToken();
+        String newPassword = request.getNewPassword();
 
         PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token)
                 .orElseThrow(() -> new RuntimeException("Invalid token"));
@@ -108,4 +110,5 @@ public class AuthController {
 
         return ResponseEntity.ok("Password successfully reset");
     }
+
 }

@@ -38,20 +38,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ CORS aquí
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/login",
                                 "/register",
+                                "/forgot-password",
+                                "/reset-password",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/destinations/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/destinations/user/**").authenticated() // permite todas las rutas que empiecen con /destinations/user/ (como /user/3)
+                        .requestMatchers("/destinations/user/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)
@@ -59,6 +61,7 @@ public class SecurityConfig {
                 .addFilterBefore(destinationSearchFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
+
 
     @Bean
     public OpenAPI customOpenAPI() {
