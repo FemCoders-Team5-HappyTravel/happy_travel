@@ -81,12 +81,16 @@
             return ResponseEntity.ok(response);
         }
 
-        @Operation(summary = "Get all destinations")
-        @ApiResponse(responseCode = "200", description = "List of all destinations")
-        @GetMapping
-        public ResponseEntity<List<DestinationResponse>> getAllDestinations() {
-            return ResponseEntity.ok(destinationService.getAllDestinations());
-        }
+    @Operation(summary = "Get all destinations by title or location")
+    @ApiResponse(responseCode = "200", description = "List of all destinations")
+    @GetMapping // URI: /destinations o /destinations?searchTerm=algunvalor
+    public ResponseEntity<List<DestinationResponse>> getAllDestinationsAndFilter(
+            @RequestParam(required = false) String searchTerm
+    ) {
+        // La lógica de "get all" y "filter" está unificada en este método.
+        List<DestinationResponse> response = destinationService.getFilteredDestinations(searchTerm);
+        return ResponseEntity.ok(response);
+    }
 
         @Operation(summary = "Get a destination by ID")
         @ApiResponse(responseCode = "200", description = "Destination details")
