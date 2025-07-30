@@ -21,4 +21,8 @@ public class GlobalExceptionHandler{
   public ResponseEntity<String> handleUserAlreadyExistsException(UserAlreadyExistsException exception) {
     return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
   }
+  @ExceptionHandler(DestinationAlreadyExistsException.class)
+  public ResponseEntity<String> handleDestinationAlreadyExistsException(DestinationAlreadyExistsException exception) {
+    return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
+  }
 }
