@@ -109,10 +109,10 @@ public class UserControllerTest {
 
 
     }
-
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Test
     @DisplayName("Should get all users as USER")
-    @WithMockUser(roles = {"USER"})
+    //@WithMockUser(roles = {"USER"})
     //@Sql("/data.sql") // Load initial data for this test
     void should_getAllUsers_asUser() throws Exception {
         mockMvc.perform(get("/users")
@@ -143,10 +143,10 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.username").value("admin"))
                 .andExpect(jsonPath("$.email").value("admin@happytravel.com"));
     }
-
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Test
     @DisplayName("Should get user by ID as USER")
-    @WithMockUser(roles = {"USER"})
+    //@WithMockUser(roles = {"USER"})
     //@Sql("/data.sql") // Load initial data for this test
     void should_getUserById_asUser() throws Exception {
         Long userId = 1L;

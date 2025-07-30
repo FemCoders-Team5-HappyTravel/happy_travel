@@ -10,6 +10,7 @@ import com.femcoders.happy_travel.security.JwtUtils;
 import com.femcoders.happy_travel.security.UserDetailsImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +26,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
     private final AuthenticationManager authManager;
+    @Autowired
+    private EmailService emailService;
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
@@ -41,6 +44,8 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
+        emailService.sendWelcomeEmail(user.getEmail(), user.getUsername());
+
         UserDetailsImpl userDetails = new UserDetailsImpl(user);
 
         String token = jwtUtils.generateToken(userDetails);
