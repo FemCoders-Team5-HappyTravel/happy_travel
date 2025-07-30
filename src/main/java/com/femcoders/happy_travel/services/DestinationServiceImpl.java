@@ -10,6 +10,8 @@ import com.femcoders.happy_travel.repositories.UserRepository;
 import com.femcoders.happy_travel.services.DestinationService;
 import com.femcoders.happy_travel.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +21,12 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class DestinationServiceImpl implements DestinationService{
+public class DestinationServiceImpl implements DestinationService {
 
 
     private final DestinationRepository destinationRepository;
     private final UserRepository userRepository;
-    private final DestinationMapper destinationMapper;
+
 
     @Override
     public List<DestinationResponse> getDestinationsByUsername(String username) {
@@ -33,7 +35,6 @@ public class DestinationServiceImpl implements DestinationService{
         List<Destination> destinations = destinationRepository.findAllByUserId(user.getId());
         return destinations.stream().map(DestinationMapper::toResponse).toList();
     }
-
 
     @Override
     public DestinationResponse createDestination(Long userId, DestinationRequest destinationRequest) {
@@ -50,11 +51,9 @@ public class DestinationServiceImpl implements DestinationService{
     }
 
     @Override
-    public List<DestinationResponse> getAllDestinations() {
-        return destinationRepository.findAll()
-                .stream()
-                .map(DestinationMapper::toResponse)
-                .collect(Collectors.toList());
+    public List<DestinationResponse> getFilteredDestinations(String searchTerm) {
+        List<Destination> destinations = destinationRepository.findBySearchTerm(searchTerm);
+        return destinations.stream().map(DestinationMapper::toResponse).toList();
     }
 
     @Override
@@ -106,6 +105,11 @@ public class DestinationServiceImpl implements DestinationService{
         return destinations.stream()
                 .map(DestinationMapper::toResponse)  // Assuming you use a mapper
                 .collect(Collectors.toList());
+    }
+
+    public Page<DestinationResponse> getDestinationsPage(Pageable pageable) {
+        return destinationRepository.findAll(pageable)
+                .map(DestinationMapper::toResponse);
     }
 }
 

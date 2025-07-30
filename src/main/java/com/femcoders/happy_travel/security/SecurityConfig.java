@@ -1,6 +1,7 @@
 package com.femcoders.happy_travel.security;
 
 import com.femcoders.happy_travel.services.UserDetailsServiceImpl;
+import com.femcoders.happy_travel.security.DestinationSearchFilter;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
@@ -32,6 +33,7 @@ public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtAuthenticationFilter jwtAuthFilter;
+    private final DestinationSearchFilter destinationSearchFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -50,12 +52,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/destinations/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/destinations/user/**").authenticated() // permite todas las rutas que empiecen con /destinations/user/ (como /user/3)
-
-
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(destinationSearchFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
