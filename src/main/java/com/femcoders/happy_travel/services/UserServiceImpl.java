@@ -1,9 +1,9 @@
 package com.femcoders.happy_travel.services;
-
 import com.femcoders.happy_travel.dtos.user.UserRequest;
 import com.femcoders.happy_travel.dtos.user.UserResponse;
 import com.femcoders.happy_travel.dtos.user.UserMapper;
 import com.femcoders.happy_travel.exceptions.UserNotFoundException;
+import com.femcoders.happy_travel.models.Role;
 import com.femcoders.happy_travel.models.User;
 import com.femcoders.happy_travel.repositories.UserRepository;
 import jakarta.transaction.Transactional;
@@ -41,13 +41,13 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
         return UserMapper.toResponse(user);
-    }
 
+    }
     @Override
     @Transactional
     public UserResponse updateUser(Long id, UserRequest request) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
+                .orElseThrow(() -> new RuntimeException("Updated User"));
 
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
@@ -56,11 +56,27 @@ public class UserServiceImpl implements UserService {
         User updatedUser = userRepository.save(user);
         return UserMapper.toResponse(updatedUser);
     }
+    @Override
+    @Transactional
+    public UserResponse updateUserRole(Long id, String role) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
+        try {
+            Role newRole = Role.valueOf(role);
+            user.setRole(newRole);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid role: " + role);
+        }
+
+        userRepository.save(user);
+
+        return UserMapper.toResponse(user);
+    }
     @Override
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
+                .orElseThrow(() -> new RuntimeException("User deleted"));
         userRepository.delete(user);
     }
 

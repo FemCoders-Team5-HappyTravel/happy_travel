@@ -1,5 +1,6 @@
 package com.femcoders.happy_travel.controllers;
 
+import com.femcoders.happy_travel.dtos.UpdateUserRoleRequest;
 import com.femcoders.happy_travel.dtos.user.UserRequest;
 import com.femcoders.happy_travel.dtos.user.UserResponse;
 import com.femcoders.happy_travel.services.UserService;
@@ -58,6 +59,17 @@ import java.util.List;
             @PutMapping("/{id}")
             public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequest userRequest) {
                 UserResponse updatedUser = userService.updateUser(id, userRequest);
+                return ResponseEntity.ok(updatedUser);
+            }
+            @Operation(summary = "Update a User Role // Accesible only by ADMIN"  )
+            @ApiResponse(responseCode = "200", description = "User updated")
+            @PreAuthorize("hasRole('ADMIN')")
+            @PutMapping("/{id}/role")
+            public ResponseEntity<UserResponse> updateUserRole(
+                    @PathVariable Long id,
+                    @Valid @RequestBody UpdateUserRoleRequest request) {
+
+                UserResponse updatedUser = userService.updateUserRole(id, request.getRole());
                 return ResponseEntity.ok(updatedUser);
             }
             @Operation(summary = "Delete a User // Accesible only by ADMIN")
