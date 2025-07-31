@@ -21,7 +21,7 @@ public class DestinationSearchFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         log.debug("DestinationSearchFilter ejecutándose para la URL: {}", request.getRequestURI());
-        if (request.getRequestURI().startsWith("/destinations")) { // Aplica a todos los endpoints de destinations
+        if (request.getRequestURI().startsWith("/destinations")) {
             String searchTerm = request.getParameter(SEARCH_TERM_PARAMETER);
             if (searchTerm != null && !searchTerm.trim().isEmpty()) {
                 request.setAttribute(SEARCH_TERM_ATTRIBUTE, searchTerm.trim());
