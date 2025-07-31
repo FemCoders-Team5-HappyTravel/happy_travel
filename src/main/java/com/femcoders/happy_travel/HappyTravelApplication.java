@@ -16,7 +16,7 @@ public class HappyTravelApplication {
 	public static void main(String[] args) {
 		SpringApplication app = new SpringApplication(HappyTravelApplication.class);
 
-		// Load .env before Spring context starts
+
 		Dotenv dotenv = Dotenv.configure().load();
 		Map<String, Object> envMap = new HashMap<>();
 		dotenv.entries().forEach(entry -> {

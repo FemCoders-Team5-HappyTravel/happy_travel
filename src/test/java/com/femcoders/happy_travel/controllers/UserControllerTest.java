@@ -97,13 +97,13 @@ public class UserControllerTest {
     @Test
     @DisplayName("Should get all users as ADMIN")
     @WithMockUser(roles = {"ADMIN"})
-    @Sql("/data.sql") // Load initial data for this test
+    @Sql("/data.sql")
     void should_getAllUsers_asAdmin() throws Exception {
         mockMvc.perform(get("/users")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2))) // Verify initial size if data is consistent
+                .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$.[0].username").value("admin"))
                 .andExpect(jsonPath("$.[0].email").value("admin@happytravel.com"));
 
@@ -113,7 +113,7 @@ public class UserControllerTest {
     @Test
     @DisplayName("Should get all users as USER")
     //@WithMockUser(roles = {"USER"})
-    //@Sql("/data.sql") // Load initial data for this test
+    //@Sql("/data.sql")
     void should_getAllUsers_asUser() throws Exception {
         mockMvc.perform(get("/users")
                         .accept(MediaType.APPLICATION_JSON))
@@ -127,7 +127,7 @@ public class UserControllerTest {
     void should_getAllUsers_asUnauthenticated() throws Exception {
         mockMvc.perform(get("/users")
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden()); // Or isForbidden() if JWT filter lets it pass but role check fails later
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -135,7 +135,7 @@ public class UserControllerTest {
     @WithMockUser(roles = {"ADMIN"})
     @Sql("/data.sql") // Load initial data for this test
     void should_getUserById_asAdmin() throws Exception {
-        Long userId = 1L; // Assuming this user exists in your test data
+        Long userId = 1L;
 
         mockMvc.perform(get("/users/{id}", userId)
                         .accept(MediaType.APPLICATION_JSON))
@@ -147,13 +147,13 @@ public class UserControllerTest {
     @Test
     @DisplayName("Should get user by ID as USER")
     //@WithMockUser(roles = {"USER"})
-    //@Sql("/data.sql") // Load initial data for this test
+    //@Sql("/data.sql")
     void should_getUserById_asUser() throws Exception {
         Long userId = 1L;
 
         mockMvc.perform(get("/users/{id}", userId)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()); // Less specific check, just verify access
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -165,7 +165,6 @@ public class UserControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-    //--- POST Endpoints ---
     @RequestMapping
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Test
@@ -189,15 +188,15 @@ public class UserControllerTest {
     @Test
     @DisplayName("Should create user as ADMIN")
     @WithMockUser(roles = {"ADMIN"})
-    //@Sql("/data.sql") // Load initial data for this test
+    //@Sql("/data.sql")
     void should_createUser_asAdmin() throws Exception {
         String uniqueSuffix = String.valueOf(System.currentTimeMillis());
         UserRequest newUserRequest = new UserRequest("adminCreatedUser_" + uniqueSuffix, "admincreate_" + uniqueSuffix + "@test.com", "securePass");
 
-        mockMvc.perform(post("/users") // Endpoint for admin to create user via UserController
+        mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newUserRequest))
-                        .with(csrf())) // Add CSRF token for POST, PUT, DELETE
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value(newUserRequest.getUsername()))
                 .andExpect(jsonPath("$.email").value(newUserRequest.getEmail()))
@@ -207,7 +206,7 @@ public class UserControllerTest {
     @Test
     @DisplayName("Should deny creating user as USER")
     @WithMockUser(roles = {"USER"})
-    //@Sql("/data.sql") // Load initial data for this test
+    //@Sql("/data.sql")
     void should_createUser_asUser_shouldBeForbidden() throws Exception {
         String uniqueSuffix = String.valueOf(System.currentTimeMillis());
         UserRequest newUserRequest = new UserRequest("userCannotCreate_" + uniqueSuffix, "usercreate_" + uniqueSuffix + "@test.com", "pass");
@@ -230,15 +229,15 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newUserRequest))
                         .with(csrf()))
-                .andExpect(status().isForbidden()); // Spring Security typically returns 403 Forbidden
+                .andExpect(status().isForbidden());
     }
 
 
-    //--- PUT Endpoints ---
+
     @Test
     @DisplayName("Should update user as ADMIN")
     @WithMockUser(roles = {"ADMIN"})
-    //@Sql("/data.sql") // Load initial data for this test
+    //@Sql("/data.sql")
     void should_updateUser_asAdmin() throws Exception {
         Long userId = 1L;
         String uniqueSuffix = String.valueOf(System.currentTimeMillis());
@@ -257,9 +256,9 @@ public class UserControllerTest {
     @Test
     @DisplayName("Should deny updating user as USER")
     @WithMockUser(roles = {"USER"})
-    //@Sql("/data.sql") // Load initial data for this test
+    //@Sql("/data.sql")
     void should_updateUser_asUser_shouldBeForbidden() throws Exception {
-        Long userId = 1L; // Try to update admin user
+        Long userId = 1L;
         String uniqueSuffix = String.valueOf(System.currentTimeMillis());
         UserRequest updatedUserRequest = new UserRequest("updateTest_" + uniqueSuffix, "updatetest_" + uniqueSuffix + "@test.com", "newPassword123");
 
@@ -285,7 +284,7 @@ public class UserControllerTest {
     }
 
 
-    //--- DELETE Endpoints ---
+
     @Test
     @DisplayName("Should delete user and cascade delete their destinations and reviews as ADMIN")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
@@ -296,7 +295,7 @@ public class UserControllerTest {
         user.setPassword(passwordEncoder.encode("password999"));
         user.setEmail("alex@example.com");
         user.setRole(Role.USER);
-        user = userRepository.save(user); // persistir y obtener el ID
+        user = userRepository.save(user);
 
 
         Destination destination = Destination.builder()
@@ -325,11 +324,9 @@ public class UserControllerTest {
         mockMvc.perform(delete("/users/" + userId))
                 .andExpect(status().isNoContent());
 
-        // Confirmar que el usuario ya no existe
         mockMvc.perform(get("/api/users/" + userId))
                 .andExpect(status().isNotFound());
 
-        // Confirmar que también se borró el destino
         mockMvc.perform(get("/api/destinations/" + destinationId))
                 .andExpect(status().isNotFound());
     }
@@ -339,7 +336,7 @@ public class UserControllerTest {
     @Test
     @DisplayName("Should deny deleting user as USER")
     @WithMockUser(roles = {"USER"})
-    //@Sql("/data.sql") // Load initial data for this test
+    //@Sql("/data.sql")
     void should_deleteUser_asUser_shouldBeForbidden() throws Exception {
         Long userId = 1L; // Try to delete admin user
         mockMvc.perform(delete("/users/{id}", userId)
@@ -350,7 +347,7 @@ public class UserControllerTest {
     @Test
     @DisplayName("Should deny deleting user as Unauthenticated")
     void should_deleteUser_asUnauthenticated_shouldBeForbidden() throws Exception {
-        mockMvc.perform(delete("/api/users/{id}", 1L)) // Assuming you try to delete user with ID 1
-                .andExpect(status().isForbidden()); // Spring Security typically returns 403 Forbidden
+        mockMvc.perform(delete("/api/users/{id}", 1L))
+                .andExpect(status().isForbidden());
     }
 }

@@ -103,7 +103,7 @@ public class DestinationServiceImpl implements DestinationService {
         List<Destination> destinations = destinationRepository.findAllByUserId(userId);
         // Convert entities to DTOs
         return destinations.stream()
-                .map(DestinationMapper::toResponse)  // Assuming you use a mapper
+                .map(DestinationMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
