@@ -79,18 +79,25 @@ public class SecurityConfig {
                         )
                 );
     }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000" ,"http://localhost:8080")); // frontend
+        config.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "http://localhost:8080",
+                "https://a557ea37-6b88-43e5-823b-d732b322a426.lovableproject.com"
+        ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true); // Necesario si usas cookies o Authorization header
+        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
