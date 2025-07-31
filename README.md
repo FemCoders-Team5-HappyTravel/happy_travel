@@ -129,9 +129,7 @@ sort	Campo y orden (asc o desc)	name,asc
 🛡️ Gestión de roles (solo administradores)
 El endpoint PUT /users/{id}/roles permite que un administrador actualice los roles de un usuario.
 
-http
-Copiar
-Editar
+
 PUT /users/3/roles
 Authorization: Bearer {tu_token_de_admin}
 Content-Type: application/json
@@ -150,9 +148,6 @@ Cuerpo	JSON con lista de roles
 📘 Swagger UI
 Abre:
 
-bash
-Copiar
-Editar
 http://localhost:8080/swagger-ui/index.html
 Haz clic en Authorize y pega tu token JWT con el prefijo Bearer.
 
@@ -165,9 +160,7 @@ PUT /users/{id}/roles
 📫 Postman
 Usa el endpoint deseado:
 
-bash
-Copiar
-Editar
+
 GET http://localhost:8080/destinations/page?page=0&size=5&sort=name,asc
 o
 
