@@ -118,20 +118,76 @@ void setUp() {
 | PUT    | `/destinations/{id}`        | Editar destino                        |
 | DELETE | `/destinations/{id}`        | Eliminar destino                      |
 
----
+## 📄 Funcionalidades de la API
 
-## 📖 Documentación con Swagger
+### 🔍 Paginación de destinos
 
-Puedes probar la API desde:
+El endpoint `GET /destinations/page` permite obtener una **lista paginada de destinos**.  
+Utiliza `Spring Data Pageable` y soporta los siguientes parámetros:
 
-```
+```http
+GET /destinations/page?page=0&size=5&sort=name,asc
+Parámetro	Descripción	Ejemplo
+page	Número de página (empezando desde 0)	0
+size	Cantidad de elementos por página	5
+sort	Campo y orden (asc o desc)	name,asc
+
+💡 Accesible para usuarios con roles ADMIN o USER.
+
+🛡️ Gestión de roles (solo administradores)
+El endpoint PUT /users/{id}/roles permite que un administrador actualice los roles de un usuario.
+
+http
+Copiar
+Editar
+PUT /users/3/roles
+Authorization: Bearer {tu_token_de_admin}
+Content-Type: application/json
+
+{
+  "roles": ["ROLE_USER", "ROLE_MODERATOR"]
+}
+Requisito	Valor
+Token JWT válido	Sí (Bearer ...)
+Rol requerido	ROLE_ADMIN
+Cuerpo	JSON con lista de roles
+
+🚫 Los usuarios no autorizados recibirán un 403 Forbidden.
+
+🧪 Cómo probar los endpoints
+📘 Swagger UI
+Abre:
+
+bash
+Copiar
+Editar
 http://localhost:8080/swagger-ui/index.html
-```
+Haz clic en Authorize y pega tu token JWT con el prefijo Bearer.
 
-- Haz login y copia el token.
-- Pulsa "Authorize" e ingresa: `Bearer TU_TOKEN`
-- Ya puedes probar endpoints protegidos.
+Prueba los endpoints disponibles:
 
+GET /destinations/page
+
+PUT /users/{id}/roles
+
+📫 Postman
+Usa el endpoint deseado:
+
+bash
+Copiar
+Editar
+GET http://localhost:8080/destinations/page?page=0&size=5&sort=name,asc
+o
+
+PUT http://localhost:8080/users/3/roles
+En la pestaña Authorization, selecciona Bearer Token.
+
+En Body, elige raw + JSON y escribe:
+
+
+{
+  "roles": ["ROLE_ADMIN"]
+}
 ---
 
 ## 🧪 Cómo ejecutar y probar
@@ -145,10 +201,16 @@ http://localhost:8080/swagger-ui/index.html
 ./mvnw spring-boot:run
 ```
 
-5. Abre Swagger en tu navegador.
+5.Abre Swagger en tu navegador.
 
 ---
 
-## 📌 Autor
 
-Desarrollado por **Team5** — Proyecto final **HappyTravel**, con enfoque en backend junior.
+## 💫 Team Members
+
+We proudly collaborate in FemCoders 💜
+
+[![May1704](https://img.shields.io/badge/May1704-cyan?style=for-the-badge&logo=github&logoColor=white)](https://github.com/May1704)
+[![VitaFlash](https://img.shields.io/badge/VitaFlash-fuchsia?style=for-the-badge&logo=github&logoColor=white)](https://github.com/vitaFlash)
+[![VitaPoperechna](https://img.shields.io/badge/VitaPoperechna-pink?style=for-the-badge&logo=github&logoColor=white)](https://github.com/VitaPoperechna)
+[![Alexandracoder](https://img.shields.io/badge/Alexandracoder-purple?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Alexandracoder)
