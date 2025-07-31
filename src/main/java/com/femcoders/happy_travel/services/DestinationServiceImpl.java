@@ -36,7 +36,6 @@ public class DestinationServiceImpl implements DestinationService {
         return destinations.stream().map(DestinationMapper::toResponse).toList();
     }
 
-
     @Override
     public DestinationResponse createDestination(Long userId, DestinationRequest destinationRequest) {
         User user = userRepository.findById(userId)
@@ -52,11 +51,9 @@ public class DestinationServiceImpl implements DestinationService {
     }
 
     @Override
-    public List<DestinationResponse> getAllDestinations() {
-        return destinationRepository.findAll()
-                .stream()
-                .map(DestinationMapper::toResponse)
-                .collect(Collectors.toList());
+    public List<DestinationResponse> getFilteredDestinations(String searchTerm) {
+        List<Destination> destinations = destinationRepository.findBySearchTerm(searchTerm);
+        return destinations.stream().map(DestinationMapper::toResponse).toList();
     }
 
     @Override
@@ -106,7 +103,7 @@ public class DestinationServiceImpl implements DestinationService {
         List<Destination> destinations = destinationRepository.findAllByUserId(userId);
         // Convert entities to DTOs
         return destinations.stream()
-                .map(DestinationMapper::toResponse)  // Assuming you use a mapper
+                .map(DestinationMapper::toResponse)
                 .collect(Collectors.toList());
     }
 

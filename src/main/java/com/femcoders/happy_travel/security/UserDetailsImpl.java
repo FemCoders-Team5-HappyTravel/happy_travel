@@ -1,6 +1,7 @@
 package com.femcoders.happy_travel.security;
 
 import com.femcoders.happy_travel.models.User;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,7 +9,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+@Getter
 public class UserDetailsImpl implements UserDetails {
+
 
     private final User user;
 
@@ -52,8 +55,4 @@ public class UserDetailsImpl implements UserDetails {
         return true;
     }
 
-    // Optional: expose user if needed elsewhere
-    public User getUser() {
-        return user;
-    }
 }

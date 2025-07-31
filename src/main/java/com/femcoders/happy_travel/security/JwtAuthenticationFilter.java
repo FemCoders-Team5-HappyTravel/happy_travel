@@ -14,10 +14,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-    // This class will handle JWT authentication logic
-    // It will extend the OncePerRequestFilter to intercept requests and validate JWT tokens
-    // The implementation will include methods to extract the JWT from the request, validate it,
-    // and set the authentication in the SecurityContextHolder
     @Component
     @RequiredArgsConstructor
     public class JwtAuthenticationFilter extends OncePerRequestFilter {

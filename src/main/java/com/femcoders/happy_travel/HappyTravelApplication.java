@@ -15,20 +15,16 @@ public class HappyTravelApplication {
 
 	public static void main(String[] args) {
 		SpringApplication app = new SpringApplication(HappyTravelApplication.class);
-
-		// Load .env before Spring context starts
 		Dotenv dotenv = Dotenv.configure().load();
 		Map<String, Object> envMap = new HashMap<>();
 		dotenv.entries().forEach(entry -> {
 			envMap.put(entry.getKey(), entry.getValue());
 			System.out.println("🔍 Injected env var: " + entry.getKey() + "=" + entry.getValue());
 		});
-
 		app.addInitializers(ctx -> {
 			ConfigurableEnvironment env = ctx.getEnvironment();
 			env.getPropertySources().addFirst(new MapPropertySource("dotenv", envMap));
 		});
-
 		app.run(args);
 	}
 }

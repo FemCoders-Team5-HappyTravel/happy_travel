@@ -1,6 +1,7 @@
 package com.femcoders.happy_travel.security;
 
 import com.femcoders.happy_travel.services.UserDetailsServiceImpl;
+import com.femcoders.happy_travel.security.DestinationSearchFilter;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
@@ -32,32 +33,35 @@ public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtAuthenticationFilter jwtAuthFilter;
+    private final DestinationSearchFilter destinationSearchFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ CORS aquí
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/login",
                                 "/register",
+                                "/forgot-password",
+                                "/reset-password",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/destinations/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/destinations/user/**").authenticated() // permite todas las rutas que empiecen con /destinations/user/ (como /user/3)
-
-
+                        .requestMatchers("/destinations/user/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(destinationSearchFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
+
 
     @Bean
     public OpenAPI customOpenAPI() {
@@ -81,7 +85,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of("http://localhost:3000" ,"http://localhost:8080")); // frontend
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true); // Necesario si usas cookies o Authorization header
+        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
