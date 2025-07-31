@@ -1,6 +1,6 @@
 # 🌍 Happy Travel - Backend API
 
-Happy Travel es una API REST desarrollada en Java con Spring Boot, que permite gestionar destinos turísticos. Incluye autenticación segura con JWT, subida de imágenes a Cloudinary, y documentación con Swagger.
+Happy Travel es una API REST desarrollada en Java con Spring Boot, que permite gestionar destinos turísticos. Incluye autenticación segura con JWT y documentación con Swagger.
 
 ---
 
@@ -10,7 +10,6 @@ Happy Travel es una API REST desarrollada en Java con Spring Boot, que permite g
 - Spring Boot
 - Spring Security (JWT)
 - MySQL
-- Cloudinary (para imágenes)
 - Swagger / OpenAPI
 - JPA / Hibernate
 - Maven
@@ -25,15 +24,19 @@ src
     └── java
         └── com.femcoders.happy_travel
             ├── controllers
-            ├── services
+            ├── dtos
+            ├── exceptions
             ├── models
             ├── repositories
-            ├── dtos
-            ├── config
+            ├── security
+            ├── services
+            ├── ElectronifyApplication
+            └── SqlConfig
     └── resources
         ├── application.properties
-        ├── static
+        └── data.sql
 .env
+
 ```
 
 ---
@@ -47,11 +50,6 @@ Crea un archivo llamado `.env` en la raíz del proyecto con las siguientes varia
 ```env
 # JWT
 JWT_SECRET=yourSuperSecretKey
-
-# Cloudinary
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
 
 # Base de datos
 DB_URL=jdbc:mysql://localhost:3306/happy_travel
@@ -75,12 +73,6 @@ server.port=8080
 - Se usa **Spring Security** con **JWT tokens**.
 - Los endpoints están protegidos por roles (USER, ADMIN).
 - Se puede acceder a rutas como `/login`, `/register` y luego autenticarse con el token en Swagger.
-
----
-
-## 📸 Subida de imágenes
-
-Las imágenes de los destinos se suben a **Cloudinary** usando el `DestinationRequest` con `MultipartFile`.
 
 ---
 
